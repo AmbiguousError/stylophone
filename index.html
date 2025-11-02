@@ -23,7 +23,7 @@
 
         .stylophone-container {
             width: 100%;
-            max-width: 550px; /* Adjust max-width to match the proportions better */
+            max-width: 800px; /* Increased max-width */
             background-color: #222; /* Main body color, dark grey/black */
             border-radius: 12px;
             box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.1);
@@ -56,16 +56,19 @@
             padding: 8px;
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
             height: 70px; /* Fixed height for the grille */
-            display: flex; /* Use flex for horizontal lines */
-            flex-direction: column;
-            justify-content: space-between;
         }
 
-        .grille-line {
-            height: 2px;
-            background: repeating-linear-gradient(90deg, #b0b0b0, #b0b0b0 4px, #777 4px, #777 8px);
-            border-radius: 1px;
+        /* NEW simplified speaker grille */
+        #speaker-grille {
+            height: 100%;
             width: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                #b0b0b0,
+                #b0b0b0 2px,
+                #333 2px,
+                #333 4px
+            );
         }
 
         .stylophone-logo {
@@ -114,21 +117,13 @@
         }
 
         .middle-controls {
-            display: flex;
-            padding: 10px 20px 0;
+            /* Style removed, now handled by Tailwind */
             background-color: #222;
         }
 
         .left-controls {
-            background-color: #eee; /* White background for controls */
-            border-radius: 6px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            align-items: flex-start;
-            margin-right: 15px; /* Space from keyboard */
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+            /* Style removed, now handled by Tailwind */
+            flex-shrink: 0; /* Prevent controls from shrinking */
         }
 
         .switch-group {
@@ -214,17 +209,10 @@
         .selector-switch.tone .selector-handle.pos3 { top: 66.6%; }
 
         .keyboard-area {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: #eee; /* White background behind keys */
-            border-radius: 6px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
-            position: relative; /* For absolute positioning of labels */
-            padding: 5px; /* Inner padding */
+            /* Style removed, now handled by Tailwind */
         }
         
-        /* --- NEW SONG PLAYER STYLES --- */
+        /* --- SONG PLAYER STYLES --- */
         .song-player-controls {
             display: flex;
             gap: 8px;
@@ -243,6 +231,7 @@
             padding: 4px;
             background-color: #fff;
             overflow: hidden; /* For long song names */
+            min-width: 100px; /* Ensure it has some width */
         }
         .song-player-controls button {
             font-family: "Roboto Mono", monospace;
@@ -287,9 +276,35 @@
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
             flex-shrink: 0;
         }
-        /* --- END SONG PLAYER STYLES --- */
+        
+        /* --- SONG SHEET STYLES --- */
+        #song-sheet-display {
+            background-color: #fff;
+            border: 1px solid #999;
+            border-radius: 3px;
+            padding: 8px;
+            height: 60px; /* Fixed height */
+            overflow-y: auto; /* Allow scrolling for long songs */
+            line-height: 1.6;
+            font-family: "Roboto Mono", monospace;
+            font-size: 0.9rem;
+            color: #333;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+            margin-bottom: 5px;
+            white-space: pre-wrap; /* Allow wrapping */
+            /* word-break: break-all; <--- Removed this */
+        }
+        #song-sheet-display span.note-highlight {
+            background-color: #a5d6a7; /* Same as play button */
+            border-radius: 2px;
+            font-weight: 700;
+            padding: 1px 2px;
+            margin: -1px -2px;
+        }
+        /* --- END SONG SHEET STYLES --- */
 
-        /* --- NEW KEYBOARD STYLES --- */
+
+        /* --- KEYBOARD STYLES --- */
         .top-labels-row {
             display: flex;
             height: 25px; /* Height for the top label row */
@@ -313,9 +328,6 @@
         }
         .top-label-segment.spacer {
             flex: 1; /* A gap segment */
-        }
-        .top-label-line {
-            /* This is no longer accurate, removing for simplicity */
         }
         
         .keyboard-recess { /* This replaces .metal-keyboard */
@@ -393,10 +405,7 @@
             position: relative;
             z-index: 1;
         }
-        .bottom-label-line {
-            /* This is no longer accurate, removing for simplicity */
-        }
-        /* --- END NEW KEYBOARD STYLES --- */
+        /* --- END KEYBOARD STYLES --- */
 
 
         .bottom-base {
@@ -423,9 +432,7 @@
         <div class="top-section">
             <div class="speaker-area">
                 <div class="speaker-grille-bg">
-                    <!-- Generate 3 horizontal lines for the grille --><div class="grille-line"></div>
-                    <div class="grille-line"></div>
-                    <div class="grille-line"></div>
+                    <!-- NEW simple grille div --><div id="speaker-grille"></div>
                 </div>
             </div>
             <div class="stylophone-logo">Stylophone</div>
@@ -435,9 +442,12 @@
             </div>
         </div>
 
-        <div class="middle-controls">
-            <div class="left-controls">
-                <!-- Power Switch --><div class="switch-group">
+        <!-- NEW Tailwind classes for responsive layout -->
+        <div class="middle-controls flex flex-col md:flex-row p-3 md:p-5">
+            <!-- NEW Tailwind classes for responsive layout -->
+            <div class="left-controls bg-white/90 rounded-lg p-2 flex flex-row md:flex-col flex-wrap md:flex-nowrap justify-around md:justify-start mb-4 md:mb-0 md:mr-4 shadow-inner">
+                
+                <!-- Power Switch --><div class="switch-group m-1 md:m-0 md:mt-3">
                     <label>POWER</label>
                     <div id="power-switch-container" class="toggle-switch-container">
                         <div class="toggle-switch" data-state="off"></div>
@@ -445,7 +455,7 @@
                     <div class="flex justify-between w-full text-xs mt-1 px-1"><span>OFF</span><span>ON</span></div>
                 </div>
 
-                <!-- Vibrato Switch --><div class="switch-group mt-3">
+                <!-- Vibrato Switch --><div class="switch-group m-1 md:m-0 md:mt-3">
                     <label>VIBRATO</label>
                     <div id="vibrato-switch-container" class="toggle-switch-container vibrato">
                         <div class="toggle-switch" data-state="off"></div>
@@ -453,7 +463,7 @@
                     <div class="flex justify-between w-full text-xs mt-1 px-1"><span>OFF</span><span>ON</span></div>
                 </div>
 
-                <!-- Tone Selector --><div class="switch-group mt-3">
+                <!-- Tone Selector --><div class="switch-group m-1 md:m-0 md:mt-3">
                     <label>TONE</label>
                     <div id="tone-selector" class="selector-switch tone">
                         <div class="selector-handle pos1" data-tone="1"></div>
@@ -464,9 +474,10 @@
                 </div>
             </div>
 
-            <div class="keyboard-area">
+            <!-- NEW Tailwind classes for responsive layout -->
+            <div class="keyboard-area flex-grow flex flex-col bg-white/90 rounded-lg shadow-inner p-1.5">
                 
-                <!-- --- NEW SONG PLAYER UI --- -->
+                <!-- --- SONG PLAYER UI --- -->
                 <div class="song-player-controls">
                     <select id="song-selector" title="Select a song">
                         <option value="">Select a song...</option>
@@ -475,7 +486,12 @@
                     <button id="stop-song-btn">Stop</button>
                     <div id="note-display">--</div>
                 </div>
-                <!-- --- END SONG PLAYER UI --- -->
+                
+                <!-- --- NEW SONG SHEET DISPLAY --- -->
+                <div id="song-sheet-display">
+                    Select a song to see the notes here.
+                </div>
+                <!-- --- END SONG SHEET DISPLAY --- -->
 
                 <!-- Top Labels Row --><div id="top-labels-row" class="top-labels-row">
                     <!-- Labels generated by JS --></div>
@@ -503,238 +519,265 @@
         let currentTone = 1; // Track tone state (1, 2, or 3)
         let activeKey = null; // Keep track of the highlighted key
 
-        // --- NEW SONG PLAYER VARS ---
+        // --- SONG PLAYER VARS ---
         let currentSongTimeout = null;
         let isSongPlaying = false;
+        let currentHighlightedNote = null; // For the song sheet
         
         /**
          * Helper function to parse song strings.
-         * Replaces dashes with spaces, splits by space, and filters empty strings.
+         * Replaces en-dashes with spaces, but keeps hyphens (for slides)
          * @param {string} noteString - The raw string of notes from the user.
          * @returns {string[]} An array of note strings.
          */
         function parseSong(noteString) {
-            // Replace various dashes with a standard space
             return noteString
                 .replace(/–/g, ' ') // Replace en-dashes
-                .replace(/-/g, ' ') // Replace hyphens
-                .split(/\s+/)       // Split by one or more spaces (handles multi-spaces, newlines)
+                .split(/\s+/)       // Split by one or more spaces
                 .filter(note => note.trim() !== ''); // Remove empty entries
         }
 
         const songs = [
-            // --- Songs I added ---
-             {
-                name: "Twinkle, Twinkle",
-                tempo: 400, 
-                notes: ["1", "1", "5", "5", "6", "6", "5", "-", "4", "4", "3", "3", "2", "2", "1", "-", "5", "5", "4", "4", "3", "3", "2", "-", "5", "5", "4", "4", "3", "3", "2", "-", "1", "1", "5", "5", "6", "6", "5", "-", "4", "4", "3", "3", "2", "2", "1"]
-            },
-            {
-                name: "Mary Had a Little Lamb",
-                tempo: 300,
-                notes: ["3", "2", "1", "2", "3", "3", "3", "-", "2", "2", "2", "-", "3", "5", "5", "-", "3", "2", "1", "2", "3", "3", "3", "3", "2", "2", "3", "2", "1", "-", "-", "-"]
-            },
-            {
-                name: "Row Your Boat",
-                tempo: 350,
-                notes: ["1", "1", "1", "2", "3", "-", "3", "2", "3", "4", "5", "-", "8", "8", "8", "5", "5", "5", "3", "3", "3", "1", "1", "1", "5", "4", "3", "2", "1", "-", "-", "-"]
-            },
             // --- Songs from user list ---
-            {
-                name: "Pink Panther",
-                tempo: 350,
-                notes: parseSong("4.5 5 6.5 7 4.5 5 6.5 7 10 9 4.5 5 6 8.5 8 7 5 4 5")
-            },
-            {
-                name: "Star Wars",
-                tempo: 400,
-                notes: parseSong("1 1 1 4 8 7 6.5 5 11 8 7 6.5 5 11 7 6.5 7 5")
-            },
-            {
-                name: "Happy Birthday",
-                tempo: 350,
-                notes: parseSong("3 3 4 3 6 5 3 3 4 3 7 6 3 3 10 8 6 6 5 4 8.5 8.5 8 6 7 6")
-            },
-            {
-                name: "Jingle Bells",
-                tempo: 300,
-                notes: parseSong("5 5 5 5 5 5 5 7 3 4 5 6 6 6 6 6 5 5 5 5 5 4 4 5 4 7 5 5 5 5 5 5 5 7 3 4 5 6 6 6 6 6 5 5 5 5 7 7 6 4 3")
-            },
-            {
-                name: "House of the Rising Sun",
-                tempo: 300,
-                notes: parseSong("4.5 4.5 6 6.5 8.5 7.5 4.5 4.5 11.5 11.5 11.5 10.5 8.5 7.5 8.5 11.5 11.5 10.5 6.5 7.5 4.5 4.5 4.5 4.5 3.5 1.5 3.5 4.5 11.5 11.5 11.5 10.5 6.5 7.5 6.5 4.5 11.5 11.5 11.5 10.5 7.5 8.5 11.5 11.5 11.5 10.5 6.5 7.5 6.5 4.5 4.5 4.5 3.5 1.5 3.5 4.5")
-            },
-            {
-                name: "Adele - Someone Like You",
-                tempo: 300,
-                notes: parseSong("8 8 8 7.5 7.5 7.5 6.5 7.5 7.5 8 6.5 6.5 7.5 8 5 5 8 7.5 7.5 8 6.5 8 10.5 10.5 10.5 10.5 12 10.5 11 10.5 9 8 10.5 10.5 10.5 9 8 6.5 8 8 8 8 5 5 5 6.5 5 5 9 8 8")
-            },
-            {
-                name: "A-ha - Take On Me",
-                tempo: 250,
-                notes: parseSong("5 5 3 1 1 4 4 4 6.5 6.5 7 8 7 7 7 4 2 5 5 5 4 4 5 4")
-            },
-            {
-                name: "Harry Potter",
-                tempo: 350,
-                notes: parseSong("2 5 7 6.5 5 9 8 6.5 2 5 7 6.5 4.5 6 3 2 5 7 6.5 5 9 11 10.5 10 7.5 10 9 8.5 2 7 5")
-            },
-            {
-                name: "Super Mario Bros",
-                tempo: 200,
-                notes: parseSong("8 8 8 6 8 10 3 6 3 1 4 5 4.5 4 3 8 10 11 8.5 10 8 6 7 5")
-            },
-            {
-                name: "Megalovania",
-                tempo: 180,
-                notes: parseSong("4 4 11 8 7.5 7 6 4 6 7 3 3 11 8 7.5 7 6 4 6 7 2 2 11 8 7.5 7 6 4 6 7 1.5 1.5 11 8 7.5 7 6 7 6 4")
-            },
-            {
-                name: "Seven Nation Army",
-                tempo: 300,
-                notes: parseSong("5 5 7 5 4 3 2 5 5 7 5 4 3 4 3 2")
-            },
-            {
-                name: "AC/DC - Thunderstruck",
-                tempo: 150,
-                notes: parseSong("2 4.5 2 6.5 2 4.5 2 6.5 2 4.5 2 6.5 2 4.5 2 6.5 2 4.5 2 6.5 2 5 2 7 2 5 2 7 2 5 2 7 2 5 2 7")
-            },
-            {
-                name: "AWOLNATION - Sail",
-                tempo: 250,
-                notes: parseSong("5 5 5 7 7 7 8 9 8 7 5 5 5 5 7 7 7 8 9 8 7 5 4 4 4 5 5 5 2 5 7 5 4 2 2 2 4 4 4 5 5 5 7 7 7")
-            },
-            {
-                name: "Beatles - Yellow Submarine",
-                tempo: 300,
-                notes: parseSong("8.5 9 10.5 8.5 7.5 8.5 6.5 8.5 8.5 7.5 6.5 4.5 4.5 8.5 8.5 7.5 10.5 10.5 10.5 10.5 11.5 7.5 7.5 7.5 7.5 7.5 7.5 7.5 7.5 7.5 7.5 6.5 6.5 6.5 6.5 6.5")
-            },
-            {
-                name: "Billie Eilish - bad guy",
-                tempo: 250,
-                notes: parseSong("7 11 7 10.5 11 10.5 8.5 7 11 7 10.5 11 10.5 8.5 7 11 7 10.5 11 10.5 8.5 3 7 3 6.5 7 6.5 4.5 3 7 3 6.5 7 6.5 4.5 4 8 4 6.5 4 3 3")
-            },
-            {
-                name: "Blondie - Heart of Glass",
-                tempo: 250,
-                notes: parseSong("10.5 10.5 9 10.5 9 10.5 9 7.5 7.5 7.5 6.5 6.5 6.5 5 10.5 10.5 9 10.5 9 10.5 9 7.5 6 3.5 7.5 7.5 7.5 6.5 6.5 6.5 5")
-            },
-            {
-                name: "David Bowie - Space Oddity",
-                tempo: 400,
-                notes: parseSong("3 3 3 3 4 3 2 3 3 3 3 4 3 2 3 4 3 4 3 4 3 4 3 4 3 4 3 3 3 3 4 3 2")
-            },
-            {
-                name: "Deep Purple - Smoke on the Water",
-                tempo: 300,
-                notes: parseSong("3 4.5 6 3 4.5 6.5 6 3 4.5 6 4.5 3")
-            },
-            {
-                name: "Europe - Final Countdown",
-                tempo: 250,
-                notes: parseSong("10.5 9 10.5 6.5 11 10.5 11 10.5 9 11 10.5 11 6.5 7.5 9 8 9 8 7.5")
-            },
-            {
-                name: "Eurythmics - Sweet Dreams",
-                tempo: 250,
-                notes: parseSong("10 10 11.5 11.5 7.5 7.5 10 10 7 7 8.5 10")
-            },
-            {
-                name: "Gorillaz - Feel Good Inc",
-                tempo: 250,
-                notes: parseSong("2 2 3.5 4 7 6.5 5 5 7 6.5 4 2")
-            },
-            {
-                name: "Gotye - Somebody That I Used To Know",
-                tempo: 300,
-                notes: parseSong("3 3 7 7 8 8.5 10 8 7 6 6 5 5 4 4 3 3 3 7 7 8 8.5 10 8 7 4 4 5 4 4 4 8")
-            },
-            {
-                name: "Michael Jackson - Beat It",
-                tempo: 250,
-                notes: parseSong("5 7 9 7 5 6.5 5 4 4")
-            },
-            {
-                name: "Joy Division - Love Will Tear Us Apart",
-                tempo: 250,
-                notes: parseSong("5 6.5 7 6.5 5 4 2 4 1")
-            },
-            {
-                name: "Jurassic Park Theme",
-                tempo: 350,
-                notes: parseSong("8.5 8 8.5 6 4.5 8.5 8 8.5 6 4.5 8.5 8 8.5 6 1.5 7.5")
-            },
-            {
-                name: "Kraftwerk - The Model",
-                tempo: 250,
-                notes: parseSong("8 8 10 8 10 8 5 5 7 5 7 8 8 8 10 9 8 9 7 5")
-            },
-            {
-                name: "Led Zeppelin - Stairway To Heaven",
-                tempo: 350,
-                notes: parseSong("1 3 5 8 9 5 3 9 10 5 3 10 6.5 4 1 6.5 5 7 7 8 8")
-            },
-            {
-                name: "Metallica - Enter Sandman",
-                tempo: 250,
-                notes: parseSong("5 7 2 1 5 7 2 1 5 7 2 1 7 5 6.5 5 6.5")
-            },
-            {
-                name: "Mission Impossible Theme",
-                tempo: 200,
-                notes: parseSong("7 7 8.5 10 7 7 6 6.5 7 7 8.5 10 7 7 6 6.5")
-            },
-            {
-                name: "Muse - Uprising",
-                tempo: 250,
-                notes: parseSong("8 6 4 1 1.5 3 1.5 1 8 5 3.5 1 8.5 10 8.5 8")
-            },
-            {
-                name: "Queen - Under Pressure",
-                tempo: 300,
-                notes: parseSong("4 4 4 4 4 4 1 7 6.5 6.5 6.5 5 5 5 5 5 5 4 4 4 4 4 4 1")
-            },
-            {
-                name: "Rick Astley - Never Gonna Give You Up",
-                tempo: 280,
-                notes: parseSong("1 2 4 2 6.5 6.5 5 1 2 4 2 5 5 4 3.5 2 1 2 4 2 4 5 3.5 2 1 1 5 4")
-            },
-            {
-                name: "Soft Cell - Tainted Love",
-                tempo: 200,
-                notes: parseSong("10 11 7 8.5 7 7 8.5 10 11")
-            },
-            {
-                name: "Spongebob - Theme",
-                tempo: 250,
-                notes: parseSong("11 12 11 9 7 9 11 12 11 7 8 7 5 3 5 7 8 7")
-            },
-            {
-                name: "Survivor - Eye of The Tiger",
-                tempo: 250,
-                notes: parseSong("10 10 8.5 10 10 8.5 10 10 7 7.5")
-            },
-            {
-                name: "The Weeknd - Blinding Lights",
-                tempo: 200,
-                notes: parseSong("6 6 4.5 6 7 3 4.5 6 6 4.5 6 7 3 4.5 8.5 7 6 4.5 8.5 7 6 4.5 6")
-            },
-            {
-                name: "Toto - Africa",
-                tempo: 300,
-                notes: parseSong("3.5 3.5 3.5 3.5 3.5 2 5 4.5 3.5 4.5 3.5 2 4.5 3.5 3.5 3.5 3.5 3.5 2 5")
-            },
-            {
-                name: "White Stripes - Seven Nation Army",
-                tempo: 300,
-                notes: parseSong("5 5 7 5 4 3 2 5 5 7 5 4 3 4 3 2")
-            },
-            {
-                name: "Wii Sports Theme",
-                tempo: 200,
-                notes: parseSong("2 3.5 5 4.5 3.5 2 6.5 4.5 5 6.5 9 8.5 9 6.5 4.5 2 3.5")
-            }
+            { name: "Pink Panther", tempo: 350, notes: parseSong("4.5 5 6.5-7 4.5 5 6.5-7 10 9 4.5-5 6 8.5 8-7-5-4-5") },
+            { name: "Star Wars", tempo: 400, notes: parseSong("1 1 1 4 8 7 6.5 5 11 8 7 6.5 5 11 7 6.5 7 5") },
+            { name: "Happy Birthday", tempo: 350, notes: parseSong("3 3 4 3 6 5 3 3 4 3 7 6 3 3 10 8 6 6 5 4 8.5 8.5 8 6 7 6") },
+            { name: "Jingle Bells", tempo: 300, notes: parseSong("5 5 5 5 5 5 5 7 3 4 5 6 6 6 6 6 5 5 5 5 5 4 4 5 4 7 5 5 5 5 5 5 5 7 3 4 5 6 6 6 6 6 5 5 5 5 7-7 6 4 3") },
+            { name: "House of the Rising Sun", tempo: 300, notes: parseSong("4.5 4.5 6 6.5 8.5 7.5 4.5 4.5 11.5 11.5 11.5 10.5 8.5 7.5 8.5 11.5 11.5 10.5 6.5 7.5 4.5 4.5 4.5 4.5 3.5 1.5 3.5 4.5 11.5 11.5 11.5 10.5 6.5 7.5 6.5 4.5 11.5 11.5 11.5 10.5 7.5 8.5 11.5 11.5 11.5 10.5 6.5 7.5 6.5 4.5 4.5 4.5 3.5 1.5 3.5 4.5") },
+            { name: "ABBA - Dancing Queen", tempo: 250, notes: parseSong("10.5-9-11 10.5-9-8-9-10.5 10.5") },
+            { name: "AC/DC - Thunderstruck", tempo: 150, notes: parseSong("2-4.5-2-6.5-2-4.5-2-6.5-2-4.5-2-6.5-2-4.5-2-6.5-2-4.5-2-6.5-2-5-2-7-2-5-2-7-2-5-2-7-2-5-2-7") },
+            { name: "Adele - Someone Like You", tempo: 300, notes: parseSong("8 8 8 7.5 7.5 7.5 6.5 7.5 7.5 8 6.5 6.5 7.5 8 5 5 8 7.5 7.5 8 6.5 8 10.5 10.5 10.5 10.5 12 10.5 11 10.5 9 8 10.5 10.5 10.5 9 8 6.5 8 8 8 8 5 5 5 6.5 5 5 9 8 8") },
+            { name: "A-ha - Take On Me", tempo: 250, notes: parseSong("5 5 3 1 1 4 4 4 6.5 6.5 7 8 7 7 7 4 2 5 5 5 4 4 5 4") },
+            { name: "Alt-J - Breezeblocks", tempo: 300, notes: parseSong("8 10 11 11 11 11 10 10 8-7-6-7-4 4 10 9 8 8 8-7-6-7-4 4 4 6-4 4 8-7-6-7-4 4 10 9 8 8 8-7-6-7-4 6-7-8-7-6 6-8-4-5-6 6-8-4-8-7-6") },
+            { name: "A$AP Rocky - Praise the Lord", tempo: 250, notes: parseSong("11.5 11 11.5 11.5 11.5 11 8.5 10 8.5 10 6 6 4.5 3") },
+            { name: "A Tribe Called Quest - Award Tour", tempo: 250, notes: parseSong("9 9 10.5 10 10 9 8.5 8.5 8 10 10 9 4.5 6-7-6 4.5 4-4.5-4-3") },
+            { name: "AWOLNATION - Sail", tempo: 250, notes: parseSong("5 5 5 7 7 7 8 9 8 7 5 5 5 5 7 7 7 8 9 8 7 5 4 4 4 5 5 5 2 5 7 5 4 2 2 2 4 4 4 5 5 5 7 7 7") },
+            { name: "B52s - Rock Lobster", tempo: 200, notes: parseSong("3.5-4.5-5-4.5-3.5 8-6.5-8-7.5 7.5 7.5 7.5 7.5 7.5 7.5 7.5 7.5-7 7.5-7 9 9 7-4.5-7-7.5 9 9 9 9 9 9 9 9 9 9 7.5 7.5 9-7 7.5 7.5") },
+            { name: "Bag Raiders - Shooting Stars", tempo: 250, notes: parseSong("11.5 11.5-12 9-7.5 11.5") },
+            { name: "Bastille - Pompeii", tempo: 250, notes: parseSong("11 11-8 11-8 10.5 10.5-8 10.5-8 10.5 10.5-8 10.5-8 9 9-8 9-8") },
+            { name: "Beatles - Lucy in The Sky", tempo: 300, notes: parseSong("5 8 12 7 12 8 6.5 8 12 8 6 12 11-10.5") },
+            { name: "Beatles - Norwegian Wood", tempo: 300, notes: parseSong("10.5 10.5-11.5 10.5 9 8.5 7.5 9 8.5 6.5 5 9 4.5 3.5") },
+            { name: "Beatles - Yellow Submarine", tempo: 300, notes: parseSong("8.5 9 10.5 8.5 7.5 8.5 6.5 8.5 8.5 7.5 6.5 4.5 4.5 8.5 8.5 7.5 10.5 10.5 10.5 10.5-11.5 7.5 7.5 7.5 7.5 7.5 7.5 7.5 7.5 7.5 7.5 6.5 6.5 6.5 6.5 6.5") },
+            { name: "Beyonce - Halo", tempo: 300, notes: parseSong("8 8 8 9 9 9 10.5 8 8-6.5 8 8 8 8 8 5 4 3.5 5 7.5 8 8 8 7.5 8") },
+            { name: "Billie Eilish - bad guy", tempo: 250, notes: parseSong("7-11 7 10.5-11-10.5 8.5 7-11 7 10.5-11-10.5 8.5 7-11 7 10.5-11-10.5 8.5 3-7 3 6.5-7-6.5 4.5 3-7 3 6.5-7-6.5 4.5 4-8 4 6.5 4 3 3") },
+            { name: "Bjork - Army Of Me", tempo: 250, notes: parseSong("1.5-3-1.5 8-7 3-4 4") },
+            { name: "Bjork - Human Behaviour", tempo: 250, notes: parseSong("8 8-5-7 8 10 8-7-8") },
+            { name: "Black Sabbath - Black Sabbath", tempo: 300, notes: parseSong("7 7 3.5-4-3.5-4-3.5-4-3.5 7 7 3.5") },
+            { name: "Black Sabbath - Iron Man", tempo: 250, notes: parseSong("2 4 4 5 5 7-6.5-7-6.5-7 4 4 5 5") },
+            { name: "Blondie - Call Me", tempo: 250, notes: parseSong("6 6 6 6 6 6 7 6 6 6 6 6 6 6 3 3-4 4 3-4 4 3-4 4 7 6 3-4 4 3-4 4 3-4 4 6 3 4 5 6 7 8 7 6 5 4 5 6 7 4 4 5 6 7 8 7 6 5 4 5 6 7 4 4 5 6 7 8-8.5-8 4 5 6 7 8-8.5-8 11 11 11 11 10 8 10 7 6 7 6 7 6 4") },
+            { name: "Blondie - Heart of Glass", tempo: 250, notes: parseSong("10.5 10.5 9 10.5 9 10.5 9 7.5 7.5 7.5 6.5 6.5 6.5-5 10.5 10.5 9 10.5 9 10.5 9 7.5-6-3.5 7.5 7.5 7.5 6.5 6.5 6.5-5 11-9-8 10-11-10-11-10-11-12-11-10-8 10-11-10-11-10-11-12-11-10-7 10-11-10-11-10-11-12-11-10-11-10.5-11 11 11-10.5-11 12-11") },
+            { name: "Blossoms - Charlemagne", tempo: 250, notes: parseSong("11-10-11-12-11-10-8 12 11 12 7 11 10 6 8 10 7 11-10-11-12-11-10-8 12 11 12 7 11 10 6 8 10 7") },
+            { name: "Blur - Song 2", tempo: 200, notes: parseSong("6 6 4.5 4.5 4.5 7.5 7.5 8.5 10 10 10 6 6 6 6 6 6 6 6 7.5 7.5 7.5 7.5 7.5 7.5 7.5 7.5 10.5 10.5 10.5 10.5 10.5 10.5 10.5 10.5 10.5 10.5 10.5 10.5 7.5 7.5 10.5 7.5-6-7.5-6 7.5 7.5 8.5 10") },
+            { name: "Boney M - Rasputin", tempo: 250, notes: parseSong("3 7 7 7 7.5-8.5-7.5 7 7 4-4.5 6 6 6 4-4.5 6 4-4.5 3 10 10 8.5 8.5 8.5 8 8 8 8 7 6 5 8.5 8.5 8.5 8 8 7 7 6 7") },
+            { name: "BORNS - Electric Love", tempo: 250, notes: parseSong("8 8 8 9 9 9 6.5 6.5 6.5 6.5-5-3.5-5-3.5-2") },
+            { name: "Bring Me the Horizon - Sleepwalking", tempo: 250, notes: parseSong("4 3-4 1.5-3 3-1.5-3-1 6 1-1.5-1 6-5-6") },
+            { name: "Britney Spears - Toxic", tempo: 200, notes: parseSong("3 3-4.5-4-3-4-4.5 4.5-4-3 7-4-4.5-4-3") },
+            { name: "Bruno Mars - Just The Way You Are", tempo: 300, notes: parseSong("3 3 6 7 8 6 6 7 8 7 6 7 6 6 6 7 8 7 8.5 8 6 7 6") },
+            { name: "Buzzcocks - Ever Fallen In Love", tempo: 250, notes: parseSong("10.5 10.5 10.5 10.5 11.5 10.5 7.5 10.5 10.5 10.5 11.5 12 11.5 10.5-9 9 10.5 10.5-9 3.5 3.5 3.5 2 2 2 4.5 4.5 4.5 3.5 3.5 3.5 2 2 2 4.5 4.5 4.5 5 6.5 6.5 5 4 5 3.5 3.5 3.5 3.5 4 5 2 7.5 10.5 9 5 5 6.5 5") },
+            { name: "Caesar’s - Jerk It Out", tempo: 250, notes: parseSong("7.5-9-7.5-9 9 7.5 6.5-8.5-6.5 5 9 9") },
+            { name: "Calvin Harris - Giant", tempo: 300, notes: parseSong("8 7.5 6.5 9 10.5 9-7.5 6.5-5 6.5-5 3.5-5 6.5-5 3.5-2 3.5-5 7.5-6.5-5 9-7.5-6.5") },
+            { name: "Calvin Harris - Acceptable in the 80s", tempo: 250, notes: parseSong("5 4-8-7 5-8-7-5-9 11 9") },
+            { name: "Carly Rae Jepsen - Call Me Maybe", tempo: 250, notes: parseSong("5 9 6.5 6.5 7 5 5 9 6.5 6.5 7-6.5-5-4 7-6.5-5-4") },
+            { name: "Carly Rae Jepsen - Run Away With Me", tempo: 250, notes: parseSong("6.5-11.5-8.5-10.5 11.5-8.5-7.5 6.5-8.5-7.5") },
+            { name: "Cats - Overture", tempo: 300, notes: parseSong("9-8.5-8 10.5-10-9-8.5-8 9-8.5-8 10.5-10-9-8.5 6") },
+            { name: "CeeLo Green - Forget You", tempo: 250, notes: parseSong("7 8 10 7 8 4 4 5 6 6 7 3") },
+            { name: "Chainsmokers - Closer", tempo: 250, notes: parseSong("7.5 8.5 8.5 7.5 7.5 8.5 8.5 7.5 7.5 10 10 7.5 8.5 8.5") },
+            { name: "Chemical Brothers - Do It Again", tempo: 250, notes: parseSong("7 7 6 7 7.5 7.5 7 4.5 4.5 4.5 3") },
+            { name: "CHIC - Le Freak", tempo: 250, notes: parseSong("8 8 7-8 10 10 8 10 8 11 11 11 10 10 10") },
+            { name: "Childish Gambino - Redbone", tempo: 300, notes: parseSong("4-8 7 6 5 3 1-4 3-4 6 10 8 5-6-7 6 4-8 7 6 5 3 1-4 3-4 6 10 8 5-7 6 4") },
+            { name: "Coolio - Gangsta’s Paradise", tempo: 300, notes: parseSong("10-11.5-11-10-9-10-11-11.5") },
+            { name: "Cream - Sunshine Of Your Love", tempo: 250, notes: parseSong("10 10 8.5 10 7 6.5 6 3 4.5 3") },
+            { name: "CRX - Broken Bones", tempo: 250, notes: parseSong("4-6-11-4 4-6-11-4 4-6-11-4 4-6-11-4-6-7") },
+            { name: "Curtis Mayfield - Move on Up", tempo: 250, notes: parseSong("9 9-8 6.5 4-6.5 2") },
+            { name: "Darude - Sandstorm", tempo: 150, notes: parseSong("2 2 2 2 2 2 2 2 2 2 2 2 5 5 5 5 5 5 5 4 4 4 4 4 4 4 1 2 2 2 2 2 5 2 2 2 2 2 2 2 2 2 2 2 2 2 5 5 5 5 5 5 5 4 4 4 4 4 4 4 1 2 2 2 2 2 2 2 2 2 2 5 2 2 2 2 2") },
+            { name: "Dave Brubeck - Take Five", tempo: 300, notes: parseSong("4.5-6.5 4.5-6.5 1.5 3.5") },
+            { name: "David Bowie - Heroes", tempo: 300, notes: parseSong("8 6.5-9-8") },
+            { name: "David Bowie - Life on Mars", tempo: 300, notes: parseSong("6 7 8 8.5 8 7 6 8 6 7 8 8.5 8 7 8 6.5 7 8 8.5 10 8.5 8 7 8.5 7 8 8.5 10 8.5 8 7 8.5 8 8 8.5 10 11 10 8.5 8 8.5 10 8 8.5 10 11 10 8.5 8 8.5 8.5 10 11 11.5 11 10 8.5 11 10 11 10 7 7 8 8.5 8 7.5 8.5 10 10.5 10 8.5 7.5 10 7.5 8.5 10 10.5 10 8.5 7.5 6 3.5 4.5 6 6.5 6 4.5 3.5 6 3.5 4.5 6 6.5 6 4.5 3.5 3.5-8.5-6 4.5 4.5 4.5 4 1.5 3 8.5 6 4.5 4.5 4 3 4 3 3 3 3-4-3 6 4.5-4-3 1.5 1.5 1.5 3 1.5-8.5-6 4.5 4.5 4.5 4 1.5 3 8.5 6 4.5 4.5 4 3 4 3 3 3 3-4-3 6 4.5-4-3 1.5 1.5 1.5 3 1.5-8.5-6-4.5 4") },
+            { name: "David Bowie - Space Oddity", tempo: 400, notes: parseSong("3 2 3 2 3 4 3 2 3 2 3 4 5 4 3 4 3 3 2 3 2 3 4 3 3 3 3 4 3 2 3 3 3 3 4 3 2 3 4 3 4 3 4 3 4 3 4 3 4 3 3 3 3 4 3 2") },
+            { name: "Dead Or Alive - You Spin Me Right Round", tempo: 250, notes: parseSong("6.5 6.5 6.5-8 8 5 5 9 8 6.5 6.5 9 9 8 5 5 9 8") },
+            { name: "Deep Purple - Smoke on the Water", tempo: 300, notes: parseSong("3 4.5 6 3 4.5 6.5-6 3 4.5 6 4.5 3") },
+            { name: "Denzel Curry - CLOUT COBAIN", tempo: 250, notes: parseSong("6-3.5-6.5 4.5 4.5-6 3-3.5") },
+            { name: "Denzel Curry - Ultimate", tempo: 200, notes: parseSong("9 9 9 9 9 4.5 7 8.5 9 9 9 9 9 4.5 7 8.5 9 9 9 9 9 4.5 7 8.5 7.5 7.5 7.5 7 4.5 11.5 9 10.5 8.5 11.5 9 10.5 8.5 11.5 9 10.5 8.5 11.5 9 10.5") },
+            { name: "DEVO - Whip It", tempo: 250, notes: parseSong("11 8 5 8 8 9 10 11") },
+            { name: "Dick Dale - Misirilou", tempo: 200, notes: parseSong("6-6.5-8-8.5-10-10.5-12-10.5-10 10-9-8-7-6 10.5-10-10.5-10-8.5 10-8.5-10-8.5-8-6-8 10-10.5-10-10.5-8 8.5-8-8.5-8-6.5-6") },
+            { name: "Dio - Holy Diver", tempo: 250, notes: parseSong("3 3 3 3 3 3 3 4 4.5 3 3 3 3 4 4.5 1.5") },
+            { name: "Disturbed - Down with The Sickness", tempo: 200, notes: parseSong("1-1.5-1-3-1 1-1.5-1-3-1 1-1.5-1-1.5") },
+            { name: "Doctor Who - Theme", tempo: 250, notes: parseSong("10-9 11 9 9 7 2 4 3-2 1-2") },
+            { name: "Doom - E1M1", tempo: 250, notes: parseSong("5 4 3 1.5 1.5-2-3 5 4 3 1.5") },
+            { name: "Doors - Break On Through", tempo: 200, notes: parseSong("5 2 4 1 5 2 2 4 1 5 2 4 1 5 2 2 4 1 4 4 4 4 5 5 6-7 7 5-7 7 5 5-7 5 7 7 9 9 9 8 6.5 7-9 7-9 7-9 5-7-5-7-5") },
+            { name: "Dr D.R.E - Still D.R.E", tempo: 250, notes: parseSong("8.5 8.5 8.5 8.5 8.5 8.5 8.5 8.5 8.5 8.5 8.5 7.5 7.5 7.5 7.5 7.5 3-4.5-3-4.5-6") },
+            { name: "Easy Life - Nightmares", tempo: 250, notes: parseSong("1.5 8 11 8-7 4-3-1.5 1.5 8 11 8-7 4-3") },
+            { name: "Ed Sheeran - Sing", tempo: 250, notes: parseSong("6.5 6.5-11.5 6.5 7.5 7.5 6.5-7.5 6.5-11.5 6.5 7.5 6.5 6.5-11.5 6.5 7.5 7.5 6.5-7.5 6.5-11.5 6.5 7.5 11.5-10.5-9-7.5-9-11.5 11.5-10.5-9-7.5-9-11.5 4.5-6.5-4.5-8.5-7.5-6.5-4.5-3.5-4.5-6.5-4.5-8.5-7.5") },
+            { name: "Eminem - ‘Till I Collapse", tempo: 250, notes: parseSong("3.5 7.5 7.5 7.5 7.5 7.5 6.5 7.5 8 7.5 3.5 7.5 7.5 7.5 7.5 7.5 6.5 7.5 5") },
+            { name: "Ennio Morricone - Good, Bad, Ugly", tempo: 300, notes: parseSong("8-11-8-11-8 6-7-4 8-11-8-11-8 6-7-10 8-11-8-11-8 6-5-4-3 8-11-8-11-8 7 4 4") },
+            { name: "Europe - Final Countdown", tempo: 250, notes: parseSong("10.5 9 10.5 6.5 11 10.5 11 10.5 9 11 10.5 11 6.5 7.5 9 8 9 8 7.5") },
+            { name: "Eurythmics - Sweet Dreams", tempo: 250, notes: parseSong("10 10 11.5 11.5 7.5 7.5 10 10 7 7 8.5 10") },
+            { name: "Fifty Cent - In Da Club", tempo: 250, notes: parseSong("8 7.5 7.5 8 6.5 7.5") },
+            { name: "Fitz and the Tantrums - The Walker", tempo: 250, notes: parseSong("8 7 6 4 6 7 8 7 6 4 4 6 7 8 7 6 10 8 8 7 6 4 6 7 8 7 6 4 4 4 4 4 7 6") },
+            { name: "Flaming Lips - Do You Realize??", tempo: 300, notes: parseSong("1-3-5 5-4-7-5 4-5-4-3-4-5-4-3") },
+            { name: "Foals - My Number", tempo: 250, notes: parseSong("5 5 4.5 3.5 4.5 3.5 2 3.5 5 5 3.5 3.5") },
+            { name: "Foo Fighters - The Pretender", tempo: 250, notes: parseSong("1 3 5 8-9-8-5-3 1 2 3 4 2-3-2-1.5 5 5 6.5-5 7-5-8-5") },
+            { name: "Fortnite Default Dance", tempo: 250, notes: parseSong("6 7.5 8.5 8.5 7.5 6 7.5 8.5 8.5 7.5 6 4.5 6 8.5 7.5 6 4.5 6") },
+            { name: "Foster The People - Pumped Up Kicks", tempo: 250, notes: parseSong("7-6 6-4.5 4.5 3-1.5 4.5 4.5 4.5 6 6 6 7 6 4 4 4 5 6 6 7 8 10 10 10 8 7 7 7 5") },
+            { name: "Frank Valli - Can’t Take My Eyes Off You", tempo: 250, notes: parseSong("8.5-8 6.5-5-4.5-5-6.5-7.5-6.5-5-4.5-5-6.5-7.5") },
+            { name: "Fray - How To Save A Life", tempo: 250, notes: parseSong("8.5 6 6 6 4 6 10 6 6 6 4 6 11 6 6 6 4 6 8 6 6 10 6 6") },
+            { name: "fun. - Tonight We Are Young", tempo: 300, notes: parseSong("6 6-3-1 6 6-5-4-5-4 6 6 6 7-8 4-8.5 8.5 4 4-8.5 8.5 8.5-8 8-8.5-8-7-8-7-6-5") },
+            { name: "Future - Mask Off", tempo: 250, notes: parseSong("4-8-6-7 7-8-7-6 5-4-3-4") },
+            { name: "Gary Numan - Cars", tempo: 250, notes: parseSong("11-10.5 7-8 8 11-10.5 7-8 8 11-10.5 7-8 8 11-10.5 7-8 8 6.5-7 9-7 6.5-7 9-7") },
+            { name: "George Ezra - Shotgun", tempo: 250, notes: parseSong("11 10 8 7-6 7-8-7-6 3-4 6 3-4 6 4 8-7 11 10 8 7-6 7-8-7-6 3-4 6 3-4 6 4 8-7 7-8-7 4 6 6 7-8-7 4 6 6 7-8-7 4 6 6 8-7") },
+            { name: "Gorillaz - Feel Good Inc", tempo: 250, notes: parseSong("2 2-3.5-4 7 6.5 5 5-7-6.5 4 2") },
+            { name: "Gorillaz - On Melancholy Hill", tempo: 250, notes: parseSong("4 8 4 8 4 8 4 3.5 8 3.5 8 3.5") },
+            { name: "Gotye - Somebody That I Used To Know", tempo: 300, notes: parseSong("3 3 7 7 8 8.5 10 8 7 6 6 5 5 4 4 3 3 3 7 7 8 8.5 10 8 7 4 4 5 4 4 4-8 4 4-6 6-4 8.5 8 8 8 8 8 7 7 7 10 10 10 10 8.5-8 7 7-6 4 4-6 6-4 8.5 8 8 7-8 8 8 6-7 7 7 7 6 4 4 4-6 6-4 8.5 8 8 8 8 8 7 7 7 10 10 10 10 8.5-8 7 7-6 4 4-6 6-4 8.5 8 8 7-8 8 8 6-7 7 7 7 6 4 7-8 8 8 6-7 7 7 7 6 4 7-8 8 8 6-7 7 7 7 6 4") },
+            { name: "Grouplove - Tongue Tied", tempo: 250, notes: parseSong("3 4.5 6 7 6 4.5 3 3 4.5 6 7 6 4.5 3 4.5 4") },
+            { name: "Gym Class Heroes - Stereo Hearts", tempo: 300, notes: parseSong("8 7.5 6.5 5 4 3.5 5 6.5 5 4 3.5 2 3.5 5 6.5 5 4 3.5 2 3.5 5 2 8 7.5 6.5 5 4 3.5 5 6.5 5 4 3.5 2 3.5 5 5 6.5 5 4 3.5 2 3.5 3.5 5 6.5 5 4 3.5 3.5 2 1") },
+            { name: "half-alive - still feel", tempo: 250, notes: parseSong("2-4-2-6-4.5 6.5 6.5 6.5 6.5-5-4-2 9-11-10.5-9 6.5-5-4-5-6.5") },
+            { name: "Happy Mondays - Step On", tempo: 250, notes: parseSong("7 8 8 7 8 7 8 9 8 7 8 8 7 8 7 8 6.5 7") },
+            { name: "Harry Potter - Hedwig’s Theme", tempo: 350, notes: parseSong("2 5 7-6.5-5 9 8 6.5 2 5 7-6.5-4.5 6 3 2 5 7-6.5-5 9 11-10.5-10-7.5 10-9-8.5-2 7 5") },
+            { name: "HONNE - la la la", tempo: 300, notes: parseSong("4.5-6.5 5-4.5-5 4.5 4.5 4.5 6.5 6.5 6.5 6.5 5 5 5 5 5 5 5 5 5 4.5 4.5 4.5 4.5 6 6 6 5 5 5 5 2 3.5 3.5 2 3.5 4.5 3.5 2 2") },
+            { name: "Hoosiers - Goodbye Mr A", tempo: 250, notes: parseSong("11.5-11 10.5-11-10.5-9 9-8.5 7.5-8.5-7.5-4") },
+            { name: "Hot Butter - Popcorn", tempo: 250, notes: parseSong("9 8 9 6.5 4 6.5 2 9 8 9 6.5 4 6.5 2 9 10.5 11 10.5 11 9 10.5 9 10.5 8 9 8 9 7 9") },
+            { name: "Human League - Don’t You Want Me", tempo: 250, notes: parseSong("8 8 5-7-8 8 5 7 10 8 8 5-7-8 11-12-11-10-9-8") },
+            { name: "Iggy Azalea - Fancy", tempo: 250, notes: parseSong("7 7 4.5 4 3 7 7 4.5 4 3") },
+            { name: "Iggy Pop - The Passenger", tempo: 250, notes: parseSong("5 5 5 6 6 6 5 5 5 7 7 7 5 5 5 6 6 6 5 5 5 4 4 4") },
+            { name: "Imagine Dragons - I Don’t Know Why", tempo: 200, notes: parseSong("4-9-10 4-9-10 4-9-10 4-9-10 5-9-10 5-9-10 5-9-10 5-9-10 6-9-10 6-9-10 6-9-10 6-9-10") },
+            { name: "Indiana Jones Theme", tempo: 250, notes: parseSong("5-6-7 10 4-5-6 7-8-9 6 3 1 3 4 5") },
+            { name: "Inspiral Carpets - Saturn 5", tempo: 200, notes: parseSong("7-12-7-12-7-12-7-11-7 7-11-7-11-7-10-7") },
+            { name: "Iron Maiden - The Trooper", tempo: 200, notes: parseSong("12 12 12 11 9 11 11 11 10 8 10 10 10 9 7 11-9-11-12") },
+            { name: "Jack Stauber - Buttercup", tempo: 250, notes: parseSong("4 4 4 4 5 6.5 5 4 2 1 4 2 7 6.5") },
+            { name: "Jay-Z - Ni**as in Paris", tempo: 250, notes: parseSong("6 3 7.5 7 3 6 3 10") },
+            { name: "Joan Jett - I Love Rock ‘N Roll", tempo: 250, notes: parseSong("5 5 5 5 7 8 8 9 9 7 5 5 5 5 7 8 8 9 9 7 12-11 9 8-7 5 7 5 4 5 5 5 5 6.5 7 6.5 7 6.5 5 7 5 4 5 5 5 5 6.5 7 6.5 5") },
+            { name: "Joy Division - Love Will Tear Us Apart", tempo: 250, notes: parseSong("5-6.5-7-6.5-5-4-2-4-1") },
+            { name: "Judas Priest - Breaking the Law", tempo: 200, notes: parseSong("8 9 10 8 9 10 8 9 10 6 7 8 6 7 8 7 10 9") },
+            { name: "Juice WRLD - Lucid Dreams", tempo: 250, notes: parseSong("8 3.5 8 7.5 3.5 7.5 6.5 2 6.5 6.5 6 8 4 8 7.5 3.5 7.5 6.5 2 6.5 6.5 6 2 6.5 2 8 6.5 2 5 3.5 7.5 6 6.5 5 4 3.5 2 3.5") },
+            { name: "Jurassic Park Theme", tempo: 350, notes: parseSong("8.5 8 8.5 6 4.5 8.5 8 8.5 6 4.5 8.5 8 8.5 6 1.5 7.5") },
+            { name: "Kansas - Carry On My Wayward Son", tempo: 250, notes: parseSong("5 7 7 10 9 7 7-8-7-6 5 7 7 10 9 7 5-4 5 7 7 10 9 7 7-8-7-6 5 3 5 4-3.5-3 3 5-4-5-7 5-4-5-8 9-11 9-8-7 8 4 8 3.5") },
+            { name: "Kanye West - Black Skinhead", tempo: 250, notes: parseSong("6 6-7.5-8.5 4.5 4.5-6.5-6 1.5 6.5-6-1.5") },
+            { name: "Kasabian - Fire", tempo: 300, notes: parseSong("10-8.5-10-11.5-10 8.5-10-8.5-7 7-6-7 6-4 1.5-3-1.5-3") },
+            { name: "Katy Perry - Hot N Cold", tempo: 250, notes: parseSong("4 7 7 7 7 4 7 7 7 7 4-8 8 9 5 5-8 8-9 5-4") },
+            { name: "Kendrick Lamar - HUMBLE", tempo: 250, notes: parseSong("11.5 11.5 12 11.5 7.5 7.5 7.5 12") },
+            { name: "Ke$ha - We R who We R", tempo: 250, notes: parseSong("4.5 4.5 7.5 7.5 7 7 10") },
+            { name: "Kid Cudi - Day ‘N’ Nite", tempo: 250, notes: parseSong("2 2 2 2 2 2 4 4 7 7 6.5 6.5 5 5 4 4") },
+            { name: "Kinks - You Really Got Me", tempo: 250, notes: parseSong("7-8 8 7-8 7-8 8 7-8 8 8-10-8-10-8 7-8 8 10-11 11.5-11 10-8 10-8 7-8 8 8 8-10-11-10-8-7-8 8 10-11 11.5-11 10-8 10-8 4 4 6 4 6 4 3-4 4 6-7-7.5-7-6-4-6-4-3-4 4 7 7-8.5-7-8.5-7-6-7 7-8.5-7-8.5-7-8.5-7-8.5-7") },
+            { name: "Kraftwerk - Pocket Calculator", tempo: 250, notes: parseSong("7.5-8.5 6 6 4.5 7.5-8.5 11.5 11.5-11 1.5-6 4.5 4.5-4") },
+            { name: "Kraftwerk - Radioactivity", tempo: 250, notes: parseSong("8.5 8.5 8.5 8.5 8.5 8.5 8.5 8.5 6.5 6.5 6.5 6.5 6.5 6.5 6.5 6.5 6 8.5 8.5 6 8.5 6 8.5 10.5 10 8.5 6 6.5 6.5 3.5 6.5 3.5 6.5 8.5 7.5 6.5") },
+            { name: "Kraftwerk - The Model", tempo: 250, notes: parseSong("8 8-10-8-10-8 5 5-7-5-7 8 8 8-10-9-8-9 7-5") },
+            { name: "Lady Gaga - Bad Romance", tempo: 250, notes: parseSong("3-4-5-3-6-5-6-5-4 2-3-4 4-5 5 5 5-4-3 3-4-5-3-6-5-6-5-4 2-3-4 4-5 5 5 5-4-3 1 1 5 5-6-5 1 1 5 5-6-5 1 1 5 5-6-5 3 3 1 3-1 3") },
+            { name: "Lady Gaga - Poker Face", tempo: 250, notes: parseSong("2 2 2 2 2 2 2 2 2 2 2 2 3.5-2 3.5-2 4.5 4.5 4.5 4.5 4.5 4.5 4.5 4.5 4.5 4.5 4.5 4.5 5-4.5 5-4.5 9-8.5 6.5 9-8.5 6.5 6.5 4.5-5-4.5 4.5 4.5-6.5 6.5 8.5-9-8.5 6.5 8.5-9-8.5 6.5") },
+            { name: "La Roux - Bulletproof", tempo: 250, notes: parseSong("4.5 6.5-7.5 3.5 3.5-4.5 3.5 3.5-2 6.5") },
+            { name: "La Roux - In For The Kill", tempo: 250, notes: parseSong("11.5 9 10.5 10.5 9 11.5 10.5 11.5 10.5 10.5 9 10.5 10.5 9 10.5 7.5 11.5 10.5 9 9 10.5 9 7.5 11.5 7.5 7.5 9 10.5 10.5-11.5-10.5 9 11.5 11.5 7.5 9 10.5 10.5 9 10.5 9 10.5 10.5 9 10.5 7.5") },
+            { name: "LCD Soundsystem - Dance Yrself Clean", tempo: 200, notes: parseSong("7.5-2-5-2-7.5-2-5-2-7.5-2-5-2-7.5-2-5-2 7.5 3.5 7.5 3.5 7.5 3.5 7.5 3.5 5 5 5 5 5 5 6.5 3.5 3.5 3.5 3.5 3.5 9") },
+            { name: "Led Zeppelin - Black Dog", tempo: 200, notes: parseSong("5 7-7.5-8 5 10 8 11 12 10 11-10-8 10 8 7-8 8 4-5 3-4 1 5 7-7.5-8 5 10 8 11 12 10 11-10-8 10 8 7-8 8 4-5 3-4 1 2-4-4.5-5-2-7-5 2-4-4.5-5-2-7-5 2-4-4.5-5-4-5-7-5 5 7-7.5-8 5 10 8 11 12 10 11-10-8 10 8 7-8 8 4-5 3-4 1") },
+            { name: "Led Zeppelin - Stairway To Heaven", tempo: 350, notes: parseSong("1 3 5 8 9 5 3 9 10 5 3 10 6.5 4 1 6.5 5 7 7 8 8") },
+            { name: "Led Zeppelin - Whole Lotta Love", tempo: 250, notes: parseSong("5 5 5 5 5 1-2-4-2-4 4 4 4 4-5") },
+            { name: "Lil Jon - Turn Down For What", tempo: 250, notes: parseSong("12 12-10 9 9-10-5") },
+            { name: "Linkin Park - In The End", tempo: 250, notes: parseSong("4.5 8.5 6.5 6 6 6 6-6.5") },
+            { name: "Linkin Park - Numb", tempo: 250, notes: parseSong("3.5 5 3.5 6.5 8 7.5 3.5 5 3.5 8 7.5 5") },
+            { name: "Lizzo - Truth Hurts", tempo: 250, notes: parseSong("3 10 7 10 3 8 5 8") },
+            { name: "Lord of The Rings - Concerning Hobbits", tempo: 300, notes: parseSong("4-5-6.5-8-6.5-5-4 6.5-8-9-11-10.5-8-6.5-7-6.5-5 4-5-6.5-8-6.5-5-4-5-4 6.5-8-9-9-9-8 6.5-8-6.5 5-4") },
+            { name: "Madcon - Beggin", tempo: 250, notes: parseSong("7-6 7-6-7 4-6 5 7 7 6 6 5 5 6-5-4") },
+            { name: "Madonna - Material Girl", tempo: 250, notes: parseSong("1.5-6-5-4-3 3 1.5-6-5-4 8 7 1.5-6-5-4-3 3 1.5-6-4-3 5 6 5 6 7 8 7 8 8.5 8.5 8 7 7 4 5 5 6 5 6 7 8 7 8 6 6 5 6 5 3") },
+            { name: "Major Lazer - Lean On", tempo: 250, notes: parseSong("8-8.5 7 8-8.5 4 8-8.5 7 7 8-8.5 4") },
+            { name: "Mamas and the Papas - California Dreamin", tempo: 300, notes: parseSong("4 5 4 3 4-3-1.5 4 5 4 3 1 6 6 5 5 4 4 4 3.5") },
+            { name: "MARINA - Bubblegum Bitch", tempo: 250, notes: parseSong("10-8.5-7.5 4.5-6-7 3 3 3 3 4.5 4.5 4.5 4.5 6 6 6 6 6 6 6 6") },
+            { name: "Marvin Gaye - Ain’t No Mountain High", tempo: 250, notes: parseSong("9 9 9 8 8 6.5 9 9 9 8 8 6.5 9 9 11 9 8 8 6.5 6.5 5 5 5 4 6.5 7") },
+            { name: "Massive Attack - Teardrop", tempo: 300, notes: parseSong("8.5 8.5 8.5 6 7 4.5 4.5 4.5 4.5-6-4.5-3.5 1.5 1.4-7.5-4.5 4.5-4-4.5-6") },
+            { name: "MC Hammer - U Can’t Touch This", tempo: 250, notes: parseSong("4 3 2 1 9 10 4 3 2 1 7 8") },
+            { name: "Megadeth - Symphony of Destruction", tempo: 200, notes: parseSong("10-9 9 10-9 9 6-7-6") },
+            { name: "Megan Thee Stallion - Savage", tempo: 250, notes: parseSong("10.5 10.5 10.5 11") },
+            { name: "Metallica - Enter Sandman", tempo: 250, notes: parseSong("5 7 2-1 5 7 2-1 5 7 2-1 7-5-6.5-5-6.5") },
+            { name: "Metallica - For Whom The Bell Tolls", tempo: 250, notes: parseSong("11-10.5-10-9 7-6.5-11 4-3.5") },
+            { name: "Metallica - Master of Puppets", tempo: 200, notes: parseSong("5 11 10.5 10 12 12 11.5 11.5 11 10.5 10 9 9 8.5 8.5 8 7.5 7 6.5 9 9 10 10 10.5 10.5 10 10 9 9 10 10 7-6.5-5 7-6.5-5 7-6.5") },
+            { name: "MGMT - Kids", tempo: 250, notes: parseSong("1 2 3.5 5 6.5-7.5-6.5 5 3.5 2 1 2 3.5 5 6.5-7.5-6.5 5 3.5 6.5 6.5 6.5 6.5 4 4 4 4 8 8 8 8 5 5 5 5") },
+            { name: "Michael Jackson - Beat It", tempo: 250, notes: parseSong("5-7-9-7-5 6.5-5-4 4 6 6 6 8.5 8.5 8.5 7.5 7.5 7.5 10.5 10.5 10.5") },
+            { name: "Michael Jackson - Smooth Criminal", tempo: 250, notes: parseSong("8 8 8 7 8 9 9 8 9 10 10 9-10-9 7 8") },
+            { name: "Mission Impossible Theme", tempo: 200, notes: parseSong("7 7 8.5 10 7 7 6 6.5 8.5-7-4 8.5-7-3.5 8.5-7-3 1.5 3") },
+            { name: "Monkees - Daydream Believer", tempo: 300, notes: parseSong("1-7 7 6.5 6.5 5") },
+            { name: "Motorhead - Ace of Spades", tempo: 200, notes: parseSong("4.5 4.5 4.5 4.5 4.5 8.5 8 7.5 4.5 4.5 4.5 4.5 4.5 8.5 8 7.5") },
+            { name: "Muse - New Born", tempo: 250, notes: parseSong("9 7 5 7 9 7 5 7 9 6.5 4.5 6.5 9 6.5 4.5 6.5 4.5 9 7 5 7 9 7 5 7 9 6.5 4.5 6.5 9 6.5 4.5 6.5 4.5 9 7 5 7 9 7 5 7 9 10 9 7 9 10 9 7 9 9 7 4 7 9 7 4 7 9 6.5 4.5 6.5 9 6.5 4.5 6.5 4.5 4 4 4 6 4 6 6.5 7 7 7 7 8.5 7 8.5 9 10 3 3 10 3 3 5 5 6 6 6 8 8 8 8.5 8.5 8.5 8.5 8.5 8.5 8.5 8.5 7 7 7 7 7 7 7 8 8 8 8 8 8 8 8") },
+            { name: "Muse - Uprising", tempo: 250, notes: parseSong("8-6-4-1-1.5-3-1.5-1 8-5-3.5-1-8.5-10-8.5-8") },
+            { name: "Noisestorm - Crab Rave", tempo: 250, notes: parseSong("7 7 6 6 6 8 8 8.5 8.5 8.5 8 4.5 9 7.5 7.5 4.5 4.5 8.5 6.5 6.5 4.5 4.5 8.5 6.5 6.5 3.5 3.5 6.5 6.5 6 4.5") },
+            { name: "N.W.A - Express Yourself", tempo: 250, notes: parseSong("11.5 4.5 4.5 7 7.5 8.5 7 4.5 7.5 7.5-7-6 8.5 8.5") },
+            { name: "Oliver Tree - Alien Boy", tempo: 250, notes: parseSong("7.5-8.5-7.5 4.5-6 7.5-8.5-7 4.5 6 7.5-8.5-7.5 4.5-6 7.5-8.5-7.5 7.5-8.5-7.5 4.5-6 7.5-8.5-7 4.5 6 7.5-8.5-7.5 4.5-6 7.5-8.5-7.5") },
+            { name: "One Direction - What Makes You Beautiful", tempo: 250, notes: parseSong("2 2 5 5 6.5 6.5 6.5 6.5 7.5 6.5 5 5 5 5 5 5 5 6.5 7.5 6.5 7.5 6.5 5 5 5 5 5 5 5 6.5 7.5 6.5 7.5 6.5 5 5 5 5 5 5 5 7.5 6.5 6.5 7.5 6.5 5 6.5 7.5 6.5 7.5 7.5 7.5 7.5 7.5 6.5 5") },
+            { name: "Outkast - B.O.B", tempo: 250, notes: parseSong("8.5 7.5-10.5-10-10.5-8.5 7 10.5-10") },
+            { name: "Outkast - Hey Ya", tempo: 250, notes: parseSong("9 10 11 12 9 10 11 12 11 10 9 9-7-5-2") },
+            { name: "Ozzy Osbourne - Crazy Train", tempo: 200, notes: parseSong("6.5 6.5 10.5 6.5 11 6.5 10.5 6.5 9 8 7.5 8 9 8 7.5 5") },
+            { name: "Pantera - Walk", tempo: 250, notes: parseSong("4 4 5-4.5-4 4 5-4.5-4") },
+            { name: "Panic! at The Disco - High Hopes", tempo: 250, notes: parseSong("11 11 11 11 11 10 10 10 10 10 8 8 8 8 8 7 7 7 7 7 11 11 11 11 11 10 10 10 10 10 8 8 8 8 8 5 5 5 5 5") },
+            { name: "Papa Roach - Last Resort", tempo: 200, notes: parseSong("5-7-6.5-7-9-7-6.5-7 4-7-6.5-7-9-7-6.5-7 3-7-6.5-7-9-7-6.5-7-9-7-6.5-7-9-7-6.5-7") },
+            { name: "Pharrell Williams - Happy", tempo: 250, notes: parseSong("6 6 6 6 6 6 7.5 8.5-7.5 10 8.5 7.5 6") },
+            { name: "Pierce the Veil - King For A Day", tempo: 200, notes: parseSong("2 3.5 4 5 6.5 7 6.5 6 5 1.5 7 6.5 6 1.5 7 6.5") },
+            { name: "Pitbull - Hotel Room", tempo: 250, notes: parseSong("2 2 4-5 8 6.5 6.5 2 2 4-5 3.5 3.5 3.5") },
+            { name: "Pixies - Where is My Mind?", tempo: 250, notes: parseSong("5-7.5-5-7.5-5-7.5-5-7.5 4.5-7.5-4.5-7.5 5 5 5-4.5 5 5 5-4.5") },
+            { name: "Post Malone - rockstar", tempo: 250, notes: parseSong("11-10 10-8.5 8.5-8 8-8.5-8-7") },
+            { name: "Primal Scream - Loaded", tempo: 250, notes: parseSong("11.5 10.5 10 8.5 11.5 10.5 10 8.5 1.5 1.5 3-4.5 4.5-3") },
+            { name: "Prodigy - No Good", tempo: 200, notes: parseSong("4.5 4.5 4.5 4 4 4 4.5 4.5 4.5 4 4 4 4.5 4.5 4.5 6 6-4.5 4.5 4 4.5 4.5 4 4.5 4 4.5") },
+            { name: "Prodigy - Omen", tempo: 250, notes: parseSong("2 8.5 9 8.5 9 8.5 4 3.5 4 3.5 4 6 2 8.5 9 8.5 9") },
+            { name: "Psychedelic Furs - Love My Way", tempo: 250, notes: parseSong("5 8 9 7 8 9 7 8 5 8 9 7 8 9 7 6.5-7-6.5") },
+            { name: "Public enemy - Harder Than You Think", tempo: 250, notes: parseSong("5 6.5 2 3.5 5 6.5 7.5 10.5 9") },
+            { name: "Pulp - Common People", tempo: 250, notes: parseSong("5 5 5 5 5 5 6 5 6 5 5 5 5 5 5 5 6 5 6 5 3 4 6 6 6 6 6 6 7 6 7 6") },
+            { name: "Queen - Under Pressure", tempo: 300, notes: parseSong("4 4 4 4 4 4-1 7 6.5 6.5 6.5-5 5 5 5 5 5-4 4 4 4 4 4-1") },
+            { name: "Q-Tip, Fergie - A Little Party", tempo: 250, notes: parseSong("5-7 8 5-7 7-6-5") },
+            { name: "Radiohead - High and Dry", tempo: 300, notes: parseSong("7.5 7.5 7.5 7.5 6.5 6.5 6.5 7.5 7.5 7.5 7.5 5 5 5 5 5 5") },
+            { name: "Rage Against the Machine - Know Your Enemy", tempo: 200, notes: parseSong("3.5 2 3.5 2 3.5 5 3.5 2 3.5 2 3.5 2 3.5 6.5 5 2 3.5 2 3.5 2 3.5 5 3.5 2 3.5 2 2 2 2 2 2 3 5 6.5 6.5 6.5 5 8 6.5 5 6.5 5 6.5 6.5 6.5 5 10 9 8") },
+            { name: "Ramones - Blitzkreig Bop", tempo: 200, notes: parseSong("1 1 1 1 1 1 1 1 4 5 1 1 1 1 1 1 1 1 4 5 1 1 1 1 1 1 1 1 4 5 1 1 4 1 1") },
+            { name: "Rich the Kid - Plug Walk", tempo: 250, notes: parseSong("5 4.5 5 4.5 7.5-6.5-7.5-4.5 7.5-6.5-7.5-6.5") },
+            { name: "Rick Astley - Never Gonna Give You Up", tempo: 280, notes: parseSong("1-2 4-2 6.5 6.5 5 1-2 4-2 5 5 4-3.5-2 1-2 4-2 4-5 3.5-2-1 1-5-4") },
+            { name: "Rob Zombie - Dragula", tempo: 250, notes: parseSong("4.5-3 3 3 3 4.5-3 3 3 3 4.5-3 3 3 3 6 6 7 4.5") },
+            { name: "Run-D.M.C - Walk This Way", tempo: 250, notes: parseSong("8-8.5-9 12 8-8.5-9 12 5 5 8-8.5-9 12 8-8.5-9 12 5 12") },
+            { name: "Siouxsie - Hong Kong Garden", tempo: 200, notes: parseSong("9 11 11 11 12 11 9 8 10 10 10 11 10 9 8") },
+            { name: "Skepta - Shutdown", tempo: 250, notes: parseSong("7 11 8.5 7 6.5 6.5 7") },
+            { name: "Smash Mouth - All Star", tempo: 250, notes: parseSong("7 9 11 12 8 9 10 11") },
+            { name: "Smash Mouth - Walkin’ on the Sun", tempo: 250, notes: parseSong("7.5-9-7.5-10.5 10.5 7-11.6-7-10.5-10.5") }, // Note: 11.6 is likely a typo for 11.5
+            { name: "Smashing Pumpkins - Bullet", tempo: 250, notes: parseSong("9 9 8 9 7 5 8") },
+            { name: "Snoop Dogg - Young, Wild and Free", tempo: 300, notes: parseSong("6.5 5 4-2-4 6.5 5 4-2-4 6.5 5 4-2-4 6.5 5 4-2 2 6.5 5 4-2-4 6.5 5 4-2-6.5 4 7 6.5 5 4 4") },
+            { name: "Soft Cell - Tainted Love", tempo: 200, notes: parseSong("10-11-7-8.5-7 7-8.5-10-11 7 7-8.5 8.5-11.5 11.5-8.5-10-8.5") },
+            { name: "Spongebob - Theme", tempo: 250, notes: parseSong("11-12-11 9-7-9 11-12-11 7-8-7 5-3-5 7-8-7") },
+            { name: "Spoon - Anything You Want", tempo: 250, notes: parseSong("5 5 5 5 5 5 5-7.5 9 9 8.5") },
+            { name: "Sports Team - M5", tempo: 250, notes: parseSong("6.5 6 5 4.5 4 3.5 3 2 1.5 1 9-8-7-5-7-9 9 9-8-7-5-7-9 9 11-9-11 9-8-9-8-7-8-7-5-7-5-4-5") },
+            { name: "Star Wars - Cantina Band", tempo: 250, notes: parseSong("8 11 8 11 8 11 8 8-7-8-7 6-7 6-4") },
+            { name: "Steely Dan - Pretzel Logic", tempo: 300, notes: parseSong("1 6.5-7 1 6.5-7 7 6.5-5") },
+            { name: "Stevie Wonder - Superstition", tempo: 250, notes: parseSong("5 4 5-7 4 4-5 1 2 4 5-7 4 4-5") },
+            { name: "Super Mario Bros Theme", tempo: 200, notes: parseSong("8 8 8 6 8 10 3 6 3 1 4 5-4.5 4 3 8 10 11 8.5 10 8 6 7 5") },
+            { name: "Survivor - Eye of The Tiger", tempo: 250, notes: parseSong("10 10 8.5 10 10 8.5 10 10 7 7.5") },
+            { name: "Suzanne Vega - Tom’s Diner", tempo: 250, notes: parseSong("6.5 7.5 8-10.5 6.5 7.5 8-10.5 6.5-10.5 9-8 9 8 9-8") },
+            { name: "System Of A Down - Chop Suey!", tempo: 200, notes: parseSong("7.5-7-7.5-7-7.5-7-7.5-7 7-6.5-7-6.5-7-6.5-7-6.5 8.5-8-8.5-8-8.5-8-8.5-8 10-8.5-10-8.5-10-8.5-10-8.5") },
+            { name: "System Of A Down - Toxicity", tempo: 250, notes: parseSong("3 4.5-4-3-4 7.5-7") },
+            { name: "Talking Heads - Psycho Killer", tempo: 250, notes: parseSong("10 10 10-9 9 9 9 7 8 7-10 8 7 8 7-10 8") },
+            { name: "Tame Impala - Borderline", tempo: 250, notes: parseSong("3-4-4.5 6 7 3-4-4.5 6 7 7.5 6 4.5 7 6") },
+            { name: "Tame Impala - Feels Like We Only Go Backwards", tempo: 300, notes: parseSong("8 8 8-7 6-7 8-6 5 3 3-4 1.5 8 7 6 7 8 6 5 5 4") },
+            { name: "Tame Impala - The Less I Know The Better", tempo: 250, notes: parseSong("6.5-5-7.5-5 6.5-5-7.5-5 6.5-5-7.5-5 6.5-5-7.5-5") },
+            { name: "Taylor Swift - Shake It Off", tempo: 200, notes: parseSong("8 8 8 8 8 8 8 8 10 10 10 10 10 10 10 10 10 10 6.5-7 7 7 7 7 7 7 7 7 6-7 7 7 7 7 7 7 7 7") },
+            { name: "Television - Marquee Moon", tempo: 250, notes: parseSong("9-8-9-8-9-8-9-8-9 9-8-9-8-9-8-9-8-9 4-3-4-3-4-3-4-3-4 4-3-4-3-4-3-4-3-4 5 6.5-7 8 9 11-10-9-8-7-6.5-5-4 5 6.5-7 8 9 11-10-9-8-7-6.5-5-4 5 6.5-7 8 9 11-10-9-8-7-6.5-5-4 8-7-6.5-5-6.5-7 11-10-9-8-9") },
+            { name: "Teriyaki Boyz - Tokyo Drift", tempo: 250, notes: parseSong("2 2 2-3-5 8-7-6.5-5") },
+            { name: "The 1975 - Chocolate", tempo: 250, notes: parseSong("5 4.5 3.5 2 3.5 3.5 3.5-4.5 3.5 3.5 3.5-4.5 3.5 3.5 3.5-4.5") },
+            { name: "The Cure - Boys Don’t Cry", tempo: 250, notes: parseSong("3.5 4 5 6.5 6.5 5 4 3.5 3.5 3.5 4 5 3.5 3.5 3.5 4 5 5 5 5 5 6.5 7.5 8 6.5 5 4") },
+            { name: "The Hives - Hate To Say I Told You So", tempo: 200, notes: parseSong("4 4 4 3 3 3 6 6 6 1.5 1.5 1.5") },
+            { name: "The Strokes - Hard To Explain", tempo: 200, notes: parseSong("7 7 7 7 7 7 7 7 6.5 6.5 6.5 6.5 6.5 6.5 6.5 6.5 7 7 7 7 7 7 7 7 10-11-12-8 7 4-3 5-3 6.5-3 5-1 4-3 5-3 6.5-3 5-1 7 7 8 8 9-8 7 7 8 8 9-8 7 7 4 2 6.5 5 11 9 11 9-8 7 7 4 2 6.5 5 11 9 11 9-8 9 11 9 10 9 9 11 9 10 9 7 9 7 8 7 7 9 7 8 7 9 11 9 10 9 9 11 9 10 9 7 9 7 8 7 7 9 7 8") },
+            { name: "The Strokes - Reptilia", tempo: 200, notes: parseSong("11 11 11-9 8 11 11 11-9 8 7.5 7.5 7.5-9 11 7.5 7.5 7.5-9 11") },
+            { name: "The The - This is The Day", tempo: 250, notes: parseSong("5 5-6-5-4-3-1-3-3.5-4-3") },
+            { name: "The Wanted - Glad You Came", tempo: 250, notes: parseSong("7 7 6 4 11 10 8.5 7 7 7 6 4 11 10 11 7 7 7 6 4 11 10 11 6 8.5 7 11 10 8.5 7") },
+            { name: "The Weeknd - Blinding Lights", tempo: 200, notes: parseSong("6 6 4.5-6-7 3 4.5 6 6 4.5-6-7 3 4.5 8.5-7 6 4.5 8.5-7 6 4.5-6") },
+            { name: "Tones and I - Dance Monkey", tempo: 250, notes: parseSong("8 8 8 7.5 7.5 7.5 6.5 6.5 6.5 8 8 6.5 8 8 7.5 6.5 7.5 6.5 8 7.5 6.5 8") },
+            { name: "Toto - Africa", tempo: 300, notes: parseSong("3.5 3.5 3.5 3.5 3.5 2 5 4.5 3.5 4.5 3.5 2 4.5 3.5 3.5 3.5 3.5 3.5 2 5") },
+            { name: "Tracy Chapman - Fast Car", tempo: 300, notes: parseSong("3.5-4-3.5-5 5 8-7.5 7.5 3.5-4-3.5-5 5 8-9-8-7.5") },
+            { name: "21 Savage - Bank Account", tempo: 250, notes: parseSong("5 7.5 6.5 7.5 5 7.5 6.5 7.5 5 7.5 6.5 7.5 8 7.5 5 7.5") },
+            { name: "Twisted Sister - I Wanna Rock", tempo: 250, notes: parseSong("8 8 8 8 7 7 7 7 11 11 11 11 5 7") },
+            { name: "Tyler, The Creator - EARFQUAKE", tempo: 250, notes: parseSong("8.5 8.5 10 8.5 8.5 8 8 8 8 7 7 8") },
+            { name: "Tyler The Creator - I THINK", tempo: 250, notes: parseSong("4.5 3.5 2 1.5 4.5 6.5 8.5 6.5 3.5 6 7.5 6 2 4.5 6.5 4.5 1.5 3.5 6 3.5 8.5 11.5 10.5 9 8.5 7.5 6 3.5") },
+            { name: "Undertale - Megalovania", tempo: 180, notes: parseSong("4 4 11 8 7.5 7 6 4 6 7 3 3 11 8 7.5 7 6 4 6 7 2 2 11 8 7.5 7 6 4 6 7 1.5 1.5 11 8 7.5 7 6 7 6 4") },
+            { name: "Unknown Mortal Orchestra - Hunnybee", tempo: 250, notes: parseSong("4.5-6 6-4.5 1.5-3.5 3.5") },
+            { name: "Vampire Weekend - A-Punk", tempo: 150, notes: parseSong("10.5 10.5 12 12 9 9 11 11 6.5 6.5 6.5 6.5 6.5 6.5 6.5 6.5 8 8 8 8 8 8 8 8 6.5 6.5 6.5 6.5 6.5 6.5 6.5 6.5") },
+            { name: "Verve - Bittersweet Symphony", tempo: 300, notes: parseSong("4.5 6.5 4.5 5 3.5 5 8 5 7.5 5 7.5") },
+            { name: "Velvet Underground - Sunday Morning", tempo: 300, notes: parseSong("1 3 8 6 3 6 1.5 4 8.5 6 4 6") },
+            { name: "Wallows & Clairo - Are You Bored Yet?", tempo: 250, notes: parseSong("7.5 8.5 7.5 8.5 10.5 8.5 7.5 8.5 7.5 6.5 7.5 6.5 7.5 8.5 7.5 6.5 4.5 3.5") },
+            { name: "White Stripes - Seven Nation Army", tempo: 300, notes: parseSong("5 5-7 5 4 3 2 5 5-7 5 4 3-4-3 2") },
+            { name: "Wii Sports Theme", tempo: 200, notes: parseSong("2-3.5-5-4.5-3.5-2-6.5 4.5 5 6.5 9 8.5 9 6.5 4.5 2 3.5") },
+            { name: "Wiz Khalifa - Black and Yellow", tempo: 200, notes: parseSong("6 4 5 4 6 4 5 4 6 3 5 3 6 3 5 3 6 1 1.5 1 6 1 1.5 1 6 1 4 5") },
+            { name: "Wolfmother - Joker and the Thief", tempo: 200, notes: parseSong("4-7-8-7-10-11-4-7-8-7-10-11 4 4 4 4 4 4 3-4-3-4-6 4 4 4 4 4 4 3-4-3-4-6 4 4 4 4 4 4 3-4-3-4-6 4 4 4 4 4 4 3-4-3-4-6 6 6 6 6 7 7-6-7-6-7-6") },
+            { name: "XXXTENTACION - Look at Me!", tempo: 250, notes: parseSong("6.5 6.5 7-6.5 3 7 2 7") },
+            { name: "Young Thug - Hot", tempo: 250, notes: parseSong("7 7 7.5 8.5 10 11.5") },
+            { name: "ZZ Top - Sharp Dressed Man", tempo: 250, notes: parseSong("6 4.5 3 6 4.5 3 7 8.5-10 10") },
         ];
 
 
@@ -779,6 +822,7 @@
         const playBtn = document.getElementById('play-song-btn');
         const stopBtn = document.getElementById('stop-song-btn');
         const noteDisplay = document.getElementById('note-display');
+        const songSheetDisplay = document.getElementById('song-sheet-display'); // NEW
 
         // --- Populate Song Selector ---
         function populateSongSelector() {
@@ -949,7 +993,30 @@
             }
         }
 
-        // --- NEW SONG PLAYER FUNCTIONS ---
+        // --- NEW: SONG SHEET DISPLAY FUNCTION ---
+        function displaySongSheet() {
+            songSheetDisplay.innerHTML = ''; // Clear previous song
+            if (currentHighlightedNote) { // Clear old highlight
+                currentHighlightedNote.classList.remove('note-highlight');
+                currentHighlightedNote = null;
+            }
+            
+            const songIndex = songSelector.value;
+            if (songIndex === "") {
+                songSheetDisplay.textContent = "Select a song to see the notes here.";
+                return; // No song selected
+            }
+
+            const song = songs[songIndex];
+            song.notes.forEach((note, index) => {
+                const noteSpan = document.createElement('span');
+                noteSpan.textContent = note + ' ';
+                noteSpan.id = `song-note-${index}`;
+                songSheetDisplay.appendChild(noteSpan);
+            });
+        }
+
+        // --- UPDATED SONG PLAYER FUNCTIONS ---
         function playSong() {
             if (!isPoweredOn) {
                 // Flash the power switch to indicate it needs to be on
@@ -964,7 +1031,6 @@
             const songIndex = songSelector.value;
             if (songIndex === "") return; // No song selected
 
-            // Find the song by index (since we sorted the list)
             const song = songs[songIndex];
             isSongPlaying = true;
             playBtn.disabled = true;
@@ -973,8 +1039,13 @@
             let noteCounter = 0;
 
             function playNextNote() {
-                // Stop previous note
+                // Stop previous note sound and key highlight
                 stopSoundAndUnhighlight(); 
+                // Un-highlight previous note in sheet
+                if (currentHighlightedNote) {
+                    currentHighlightedNote.classList.remove('note-highlight');
+                    currentHighlightedNote = null;
+                }
 
                 if (!isSongPlaying || noteCounter >= song.notes.length) {
                     stopSong(); // Song is over
@@ -982,34 +1053,82 @@
                 }
 
                 const noteString = song.notes[noteCounter];
-                const noteIndex = songNoteToNoteIndex[noteString];
-
-                if (noteIndex !== undefined) {
-                    playNote(noteIndex);
-                    // Find and highlight the key
-                    activeKey = keyboard.querySelector(`.key[data-note-index="${noteIndex}"]`);
-                    if (activeKey) {
-                        activeKey.classList.add('active');
+                
+                // Highlight current note in sheet *first*
+                const noteSpan = document.getElementById(`song-note-${noteCounter}`);
+                if (noteSpan) {
+                    noteSpan.classList.add('note-highlight');
+                    currentHighlightedNote = noteSpan;
+                    // Scroll to the note if it's out of view
+                    const spanRect = noteSpan.getBoundingClientRect();
+                    const sheetRect = songSheetDisplay.getBoundingClientRect();
+                    if (spanRect.bottom > sheetRect.bottom || spanRect.top < sheetRect.top) {
+                        noteSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
-                    noteDisplay.textContent = noteString;
-                    
-                    // Schedule this note to stop ~50ms before the next note, creating a gap
-                    // Ensure tempo is not too fast
-                    const stopDelay = Math.max(50, song.tempo - 50);
-                    setTimeout(stopSoundAndUnhighlight, stopDelay); 
-                } else {
-                    // This is a pause or invalid note
-                    stopSound(); // Ensure sound is off
-                    noteDisplay.textContent = "-";
-                    // Note: No sound will play, creating a pause for the duration of `song.tempo`
                 }
 
-                noteCounter++;
-                // Schedule the *next* note
-                currentSongTimeout = setTimeout(playNextNote, song.tempo);
-            }
+                if (noteString === "-") {
+                    // This is a pause
+                    stopSound();
+                    noteDisplay.textContent = "-";
+                    noteCounter++;
+                    currentSongTimeout = setTimeout(playNextNote, song.tempo); // Schedule next note
+                
+                } else if (noteString.includes('-')) {
+                    // This is a "slide" (fast sequence)
+                    noteDisplay.textContent = noteString;
+                    const slideNotes = noteString.split('-');
+                    const slideTempo = Math.max(50, song.tempo / slideNotes.length);
+                    let slideCounter = 0;
+                    
+                    function playSlideNote() {
+                        stopSoundAndUnhighlight(); // Stop previous slide note
 
-            playNextNote();
+                        if (!isSongPlaying || slideCounter >= slideNotes.length) {
+                            // Slide is over
+                            noteCounter++; // Move to next main note
+                            currentSongTimeout = setTimeout(playNextNote, song.tempo); // Schedule next main note
+                            return; 
+                        }
+                        
+                        const slideNoteString = slideNotes[slideCounter];
+                        const noteIndex = songNoteToNoteIndex[slideNoteString];
+                        
+                        if (noteIndex !== undefined) {
+                            playNote(noteIndex);
+                            activeKey = keyboard.querySelector(`.key[data-note-index="${noteIndex}"]`);
+                            if (activeKey) activeKey.classList.add('active');
+                        }
+                        
+                        slideCounter++;
+                        currentSongTimeout = setTimeout(playSlideNote, slideTempo); // Schedule next slide note
+                    }
+                    playSlideNote(); // Start the slide
+
+                } else {
+                    // This is a single note
+                    const noteIndex = songNoteToNoteIndex[noteString];
+                    if (noteIndex !== undefined) {
+                        playNote(noteIndex);
+                        activeKey = keyboard.querySelector(`.key[data-note-index="${noteIndex}"]`);
+                        if (activeKey) activeKey.classList.add('active');
+                        noteDisplay.textContent = noteString;
+                        
+                        // Schedule this note to stop
+                        const stopDelay = Math.max(50, song.tempo - 50);
+                        setTimeout(stopSoundAndUnhighlight, stopDelay);
+                    } else {
+                        // Invalid note
+                        stopSound();
+                        noteDisplay.textContent = "?";
+                        console.warn(`Invalid note: "${noteString}" in song "${song.name}"`);
+                    }
+                    
+                    noteCounter++; // Move to next main note
+                    currentSongTimeout = setTimeout(playNextNote, song.tempo); // Schedule next main note
+                }
+            }
+            playNextNote(); // Start the first note
         }
 
         function stopSong() {
@@ -1022,6 +1141,12 @@
             noteDisplay.textContent = "--";
             playBtn.disabled = false;
             songSelector.disabled = false;
+            
+            // Un-highlight in sheet
+            if (currentHighlightedNote) {
+                currentHighlightedNote.classList.remove('note-highlight');
+                currentHighlightedNote = null;
+            }
         }
 
         // --- END SONG PLAYER FUNCTIONS ---
@@ -1144,9 +1269,10 @@
             }
         });
 
-        // --- NEW: Song Player Event Listeners ---
+        // --- SONG PLAYER Event Listeners ---
         playBtn.addEventListener('click', playSong);
         stopBtn.addEventListener('click', stopSong);
+        songSelector.addEventListener('change', displaySongSheet); // NEW
 
 
         // Mouse Events
