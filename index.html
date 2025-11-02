@@ -223,16 +223,18 @@
             position: relative; /* For absolute positioning of labels */
             padding: 5px; /* Inner padding */
         }
-
+        
+        /* --- NEW KEYBOARD STYLES --- */
         .top-labels-row {
             display: flex;
             height: 25px; /* Height for the top label row */
             margin-bottom: 2px;
-            position: relative; /* Needed for z-index of labels */
+            position: relative;
+            padding-left: calc(100% / 12 / 2); /* Offset to align with gaps */
+            box-sizing: border-box;
         }
-
         .top-label-segment {
-            flex-grow: 1;
+            flex: 1; /* Each segment takes equal space */
             height: 100%;
             display: flex;
             align-items: center;
@@ -242,51 +244,62 @@
             font-weight: bold;
             box-sizing: border-box;
             position: relative;
-            z-index: 1; /* Ensure labels are above background */
+            z-index: 1;
         }
-        .top-label-segment.white {
-            background-color: #fff;
+        .top-label-segment.spacer {
+            flex: 1; /* A gap segment */
         }
-        .top-label-segment.black {
-            background-color: #000;
-            color: #eee;
-        }
-
         .top-label-line {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background-color: #888;
-            z-index: 0; /* Behind labels */
+            /* This is no longer accurate, removing for simplicity */
+        }
+        
+        .keyboard-recess { /* This replaces .metal-keyboard */
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 8px;
+            gap: 4px; /* Gap between top and bottom key rows */
+            position: relative;
+            background-color: #b0b0b0; /* Metallic base color */
+            /* Grid background */
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.15) 1px, transparent 1px);
+            background-size: 12px 12px; /* Size of the grid squares */
+            border: 1px solid #777;
+            border-radius: 4px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
         }
 
-        .metal-keyboard {
+        .top-key-row, .bottom-key-row {
             display: flex;
             flex-grow: 1;
-            padding: 3px;
-            gap: 2px; /* Gap between keys */
-            position: relative; /* For the outline */
-            background-color: #eee; /* Background for the gaps when keys are smaller */
-        }
-        .metal-keyboard::before {
-            content: '';
-            position: absolute;
-            top: 0; bottom: 0; left: 0; right: 0;
-            border: 1px solid #aaa;
-            border-radius: 4px;
-            pointer-events: none; /* Do not block interaction with keys */
+            gap: 3px; /* Gap between keys */
         }
 
         .key {
-            flex-grow: 1;
-            background: linear-gradient(to bottom, #d8d8d8 0%, #a0a0a0 50%, #808080 100%); /* More realistic metal */
+            background: linear-gradient(to bottom, #d8d8d8 0%, #a0a0a0 50%, #808080 100%);
             border: 1px solid #777;
             border-radius: 2px;
             box-shadow: inset 0 1px 2px rgba(255,255,255,0.7), inset 0 -1px 2px rgba(0,0,0,0.5);
-            width: calc((100% / var(--num-keys)) - 2px); /* Dynamic width with gap */
-            transition: background-color 0.05s ease; /* Visual feedback on hover/press */
+            transition: background-color 0.05s ease;
             position: relative;
+            flex: 1; /* All keys and spacers take equal width */
+            z-index: 10;
+        }
+        .key.key-spacer {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            z-index: 1;
+        }
+
+        .top-key-row .key {
+            height: 40px; /* Top keys are shorter */
+        }
+
+        .bottom-key-row .key {
+            height: 50px; /* Bottom keys are taller */
         }
 
         /* Active key feedback */
@@ -303,7 +316,7 @@
         }
 
         .bottom-label-segment {
-            flex-grow: 1;
+            flex: 1;
             height: 100%;
             display: flex;
             align-items: center;
@@ -315,15 +328,11 @@
             position: relative;
             z-index: 1;
         }
-
         .bottom-label-line {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background-color: #888;
-            z-index: 0;
+            /* This is no longer accurate, removing for simplicity */
         }
+        /* --- END NEW KEYBOARD STYLES --- */
+
 
         .bottom-base {
             background-color: #e0e0e0; /* White bottom base */
@@ -338,7 +347,7 @@
         }
 
         /* Simple stylus cursor */
-        .metal-keyboard:hover {
+        .keyboard-recess:hover {
             cursor: crosshair;
         }
     </style>
@@ -394,7 +403,7 @@
                 <!-- Top Labels Row --><div id="top-labels-row" class="top-labels-row">
                     <!-- Labels generated by JS --></div>
 
-                <!-- Metal Keyboard Area --><div id="keyboard" class="metal-keyboard">
+                <!-- Metal Keyboard Area --><div id="keyboard" class="keyboard-recess">
                     <!-- Keys generated by JS --></div>
 
                 <!-- Bottom Labels Row --><div id="bottom-labels-row" class="bottom-labels-row">
@@ -417,8 +426,6 @@
         let currentTone = 1; // Track tone state (1, 2, or 3)
 
         // Frequencies for a Stylophone (C4 to G5, including sharps for 20 keys)
-        // A common Stylophone has 13 keys from C4 to C5, then a few more.
-        // We'll use 20 notes as requested, covering C4 to G5.
         const noteFrequencies = [
             261.63, 277.18, 293.66, 311.13, 329.63, // C4 to E4
             349.23, 369.99, 392.00, 415.30, 440.00, // F4 to A4
@@ -441,60 +448,98 @@
         const toneSelector = document.getElementById('tone-selector');
         const toneSelectorHandle = toneSelector.querySelector('.selector-handle');
 
-        // --- Generate Keys and Labels ---
+        // --- NEW: Key and Label Generation ---
         function generateKeyboardElements() {
             keyboard.innerHTML = ''; // Clear existing keys
             topLabelsRow.innerHTML = ''; // Clear existing labels
             bottomLabelsRow.innerHTML = ''; // Clear existing labels
 
-            // Set CSS variable for key width calculation
-            keyboard.style.setProperty('--num-keys', numKeys);
+            // Define the layout based on a piano
+            // 12 Bottom ("white") keys
+            const bottomKeyIndices = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19];
+            const bottomKeyLabels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+            
+            // 8 Top ("black") keys
+            const topKeyIndices = [1, 3, 6, 8, 10, 13, 15, 18];
+            const topKeyLabels = ['1.5', '3.5', '4.5', '6.5', '7.5', '8.5', '10.5', '11.5'];
+            // Gaps in the top row are after bottom keys 2, 5, 9 (piano C-D-E, F-G-A-B, C-D-E, F-G)
+            // So gaps after bottom key indices 1 (D), 4 (G), 6 (B), 8 (D5), 10 (F5) -- wait
+            // Gaps after E, B. (Indices 4, 11 in main array)
+            // Gaps after Bottom Key Labels 2 (E), 5 (A), -- No, 2 (D), 5 (G), 9(B) in image.
+            // Let's use the image's gaps: after bottom labels 2, 5, 9.
+            // This corresponds to after bottomKeyIndices[1], bottomKeyIndices[4], bottomKeyIndices[8]
+            const topKeyGapsAfterBottomLabel = [2, 5, 9];
+            
+            const topKeyRow = document.createElement('div');
+            topKeyRow.className = 'top-key-row';
+            
+            const bottomKeyRow = document.createElement('div');
+            bottomKeyRow.className = 'bottom-key-row';
 
-            const topLabels = ['1.5', '3.5', '4.5', '6.5', '8.5', '10.5', '11.5', '13.5', '15.5', '17.5', '19.5']; // Approximate positions
-            const topLabelIndices = [1, 3, 4, 6, 8, 10, 11, 13, 15, 17, 19]; // Indices for the sharp/half-step notes
+            let topKeyCounter = 0;
+            for (let i = 0; i < bottomKeyLabels.length; i++) {
+                // --- Create Bottom Key ---
+                const bottomKey = document.createElement('div');
+                bottomKey.className = 'key';
+                bottomKey.dataset.noteIndex = bottomKeyIndices[i];
+                bottomKeyRow.appendChild(bottomKey);
 
-            for (let i = 0; i < numKeys; i++) {
-                // Key element
-                const key = document.createElement('div');
-                key.className = 'key h-full';
-                key.dataset.noteIndex = i;
-                keyboard.appendChild(key);
+                // --- Create Bottom Label ---
+                const bottomLabel = document.createElement('div');
+                bottomLabel.className = 'bottom-label-segment';
+                bottomLabel.textContent = bottomKeyLabels[i];
+                bottomLabelsRow.appendChild(bottomLabel);
 
-                // Bottom Label (1, 2, 3...)
-                const bottomLabelSegment = document.createElement('div');
-                bottomLabelSegment.className = 'bottom-label-segment';
-                bottomLabelSegment.style.width = `${100 / numKeys}%`;
-                bottomLabelSegment.textContent = i + 1;
-                bottomLabelsRow.appendChild(bottomLabelSegment);
-
-                // Top Label (1.5, 3.5...)
-                const topLabelSegment = document.createElement('div');
-                topLabelSegment.className = 'top-label-segment';
-                topLabelSegment.style.width = `${100 / numKeys}%`;
+                // --- Create Top Row Element (Key or Spacer) ---
+                // We create 11 "slots" in the top row (for the gaps between 12 bottom keys)
+                // This isn't right. Let's align top keys to 12 bottom key columns
                 
-                let isBlackSegment = false;
-                if (topLabelIndices.includes(i)) {
-                    topLabelSegment.textContent = topLabels[topLabelIndices.indexOf(i)];
-                    topLabelSegment.classList.add('black');
-                    isBlackSegment = true;
-                } else {
-                    topLabelSegment.classList.add('white');
-                }
-
-                // Add vertical lines between segments
-                if (i < numKeys - 1) {
-                    const lineTop = document.createElement('div');
-                    lineTop.className = 'top-label-line';
-                    lineTop.style.left = `${(100 / numKeys) * (i + 1)}%`;
-                    topLabelsRow.appendChild(lineTop);
-
-                    const lineBottom = document.createElement('div');
-                    lineBottom.className = 'bottom-label-line';
-                    lineBottom.style.left = `${(100 / numKeys) * (i + 1)}%`;
-                    bottomLabelsRow.appendChild(lineBottom);
-                }
-                topLabelsRow.appendChild(topLabelSegment);
+                // --- Create Top Label Element (Label or Spacer) ---
+                const topLabel = document.createElement('div');
+                topLabel.className = 'top-label-segment';
+                
+                // Check if a top key *starts* before this bottom key
+                // This is complex. Let's simplify.
             }
+            
+            // --- Re-build top row with 12 slots for alignment ---
+            let topKeyIndex = 0;
+            const topLabelMap = {
+                0: '1.5', // Before bottom key 2
+                2: '3.5', // Before bottom key 4
+                3: '4.5', // Before bottom key 5
+                5: '6.5', // Before bottom key 7
+                6: '7.5', // Before bottom key 8
+                7: '8.5', // Before bottom key 9
+                9: '10.5', // Before bottom key 11
+                10: '11.5' // Before bottom key 12
+            };
+            // Gaps at bottom label 3, 6, 10
+            const topKeyGapsAt = [2, 5, 9]; // At bottom label 3, 6, 10
+
+            for (let i = 0; i < 12; i++) { // 12 slots, one for each bottom key
+                const topLabel = document.createElement('div');
+                topLabel.className = 'top-label-segment';
+
+                const topKeySlot = document.createElement('div');
+                
+                if (topKeyGapsAt.includes(i)) {
+                    // This is a gap
+                    topKeySlot.className = 'key key-spacer'; // Spacer
+                    topLabel.className = 'top-label-segment spacer';
+                } else {
+                    // This is a key
+                    topKeySlot.className = 'key';
+                    topKeySlot.dataset.noteIndex = topKeyIndices[topKeyIndex];
+                    topLabel.textContent = topKeyLabels[topKeyIndex];
+                    topKeyIndex++;
+                }
+                topKeyRow.appendChild(topKeySlot);
+                topLabelsRow.appendChild(topLabel);
+            }
+
+            keyboard.appendChild(topKeyRow);
+            keyboard.appendChild(bottomKeyRow);
         }
         generateKeyboardElements(); // Generate on load
 
@@ -527,7 +572,11 @@
                 console.log("Audio initialized.");
             } catch (e) {
                 console.error("Web Audio API is not supported in this browser", e);
-                alert("Sorry, your browser doesn't support the Web Audio API needed for this simulation.");
+                // Use a less obtrusive error message
+                const errorDiv = document.createElement('div');
+                errorDiv.textContent = "Sorry, your browser doesn't support the Web Audio API.";
+                errorDiv.className = "text-red-500 bg-white p-4 rounded-lg shadow-lg fixed top-4 left-1/2 -translate-x-1/2";
+                document.body.appendChild(errorDiv);
             }
         }
 
@@ -582,25 +631,13 @@
 
             // Check if interaction is directly on a key
             let targetElement = document.elementFromPoint(clientX, clientY);
-            let keyElement = targetElement ? targetElement.closest('.key') : null;
+            let keyElement = targetElement ? targetElement.closest('.key:not(.key-spacer)') : null; // Ignore spacers
 
             if (keyElement && keyElement.dataset.noteIndex) {
                 return parseInt(keyElement.dataset.noteIndex, 10);
             }
             
-            // Fallback for dragging across the keyboard area
-            const rect = keyboard.getBoundingClientRect();
-            if (clientX >= rect.left && clientX <= rect.right &&
-                clientY >= rect.top && clientY <= rect.bottom) {
-                
-                const x = clientX - rect.left;
-                const percent = x / rect.width;
-                const noteIndex = Math.floor(percent * numKeys);
-
-                if (noteIndex >= 0 && noteIndex < numKeys) {
-                    return noteIndex;
-                }
-            }
+            // Fallback for dragging removed, as it's no longer a linear keyboard
             return -1; // Not over a valid key area
         }
 
@@ -615,15 +652,17 @@
 
             isMouseDown = true;
             const noteIndex = getNoteIndexFromEvent(e);
+            
+            if (activeKey) activeKey.classList.remove('active'); // Deactivate previous key
+            activeKey = null;
+
             if (noteIndex !== -1) {
                 playNote(noteIndex);
-                if (activeKey) activeKey.classList.remove('active');
-                activeKey = keyboard.children[noteIndex];
-                activeKey.classList.add('active');
+                // Find the key element in DOM to highlight it
+                activeKey = keyboard.querySelector(`.key[data-note-index="${noteIndex}"]`);
+                if(activeKey) activeKey.classList.add('active');
             } else {
                 stopSound(); // If clicked off a key, stop sound
-                if (activeKey) activeKey.classList.remove('active');
-                activeKey = null;
             }
         }
 
@@ -632,17 +671,18 @@
             if (!isMouseDown || !isPoweredOn) return;
 
             const noteIndex = getNoteIndexFromEvent(e);
-            if (noteIndex !== -1) {
-                playNote(noteIndex);
-                if (activeKey && activeKey !== keyboard.children[noteIndex]) {
-                    activeKey.classList.remove('active');
-                }
-                activeKey = keyboard.children[noteIndex];
-                activeKey.classList.add('active');
-            } else {
-                // If we drag off the keys, stop the sound
-                stopSound();
+            const newActiveKey = noteIndex !== -1 ? keyboard.querySelector(`.key[data-note-index="${noteIndex}"]`) : null;
+
+            if (newActiveKey && newActiveKey !== activeKey) {
+                // Moved to a new key
                 if (activeKey) activeKey.classList.remove('active');
+                activeKey = newActiveKey;
+                activeKey.classList.add('active');
+                playNote(noteIndex);
+            } else if (!newActiveKey && activeKey) {
+                // Moved off a key
+                stopSound();
+                activeKey.classList.remove('active');
                 activeKey = null;
             }
         }
@@ -684,9 +724,13 @@
             currentTone = (currentTone % 3) + 1; // Cycle 1 -> 2 -> 3 -> 1
             toneSelectorHandle.dataset.tone = currentTone;
             // Update handle position
-            if (currentTone === 1) toneSelectorHandle.classList.remove('pos2', 'pos3');
-            else if (currentTone === 2) { toneSelectorHandle.classList.remove('pos3'); toneSelectorHandle.classList.add('pos2'); }
-            else if (currentTone === 3) { toneSelectorHandle.classList.remove('pos2'); toneSelectorHandle.classList.add('pos3'); }
+            if (currentTone === 1) {
+                toneSelectorHandle.className = 'selector-handle pos1';
+            } else if (currentTone === 2) {
+                toneSelectorHandle.className = 'selector-handle pos2';
+            } else if (currentTone === 3) {
+                toneSelectorHandle.className = 'selector-handle pos3';
+            }
             
             console.log("Tone:", currentTone);
             // If a note is currently playing, update its frequency
@@ -697,11 +741,12 @@
 
 
         // Mouse Events
-        keyboard.addEventListener('mousedown', handleInteractionStart);
-        keyboard.addEventListener('mousemove', handleInteractionMove);
+        const keyboardRecess = document.getElementById('keyboard');
+        keyboardRecess.addEventListener('mousedown', handleInteractionStart);
+        keyboardRecess.addEventListener('mousemove', handleInteractionMove);
         
         window.addEventListener('mouseup', handleInteractionEnd);
-        keyboard.addEventListener('mouseleave', (e) => {
+        keyboardRecess.addEventListener('mouseleave', (e) => {
             if (isMouseDown) { // Only stop if the mouse button is still down
                 stopSound();
                 if (activeKey) activeKey.classList.remove('active');
@@ -710,10 +755,10 @@
         });
 
         // Touch Events
-        keyboard.addEventListener('touchstart', handleInteractionStart);
-        keyboard.addEventListener('touchmove', handleInteractionMove);
-        keyboard.addEventListener('touchend', handleInteractionEnd);
-        keyboard.addEventListener('touchcancel', handleInteractionEnd);
+        keyboardRecess.addEventListener('touchstart', handleInteractionStart);
+        keyboardRecess.addEventListener('touchmove', handleInteractionMove);
+        keyboardRecess.addEventListener('touchend', handleInteractionEnd);
+        keyboardRecess.addEventListener('touchcancel', handleInteractionEnd);
 
     </script>
 </body>
