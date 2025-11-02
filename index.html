@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stylophone Simulator</title>
+    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        body {
+            font-family: "Roboto Mono", monospace;
+            touch-action: none; /* Disable touch scrolling on the body */
+            background-color: #3a3a3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .stylophone-container {
+            width: 100%;
+            max-width: 550px; /* Adjust max-width to match the proportions better */
+            background-color: #222; /* Main body color, dark grey/black */
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.1);
+            overflow: hidden; /* For rounded corners */
+            position: relative;
+            padding-bottom: 20px; /* Space for the bottom white part */
+        }
+
+        .top-section {
+            background-color: #000;
+            padding: 15px 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+        .speaker-area {
+            background-color: #000; /* Speaker area background */
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .speaker-grille-bg {
+            background-color: #333;
+            border-radius: 4px;
+            padding: 8px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+            height: 70px; /* Fixed height for the grille */
+            display: flex; /* Use flex for horizontal lines */
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .grille-line {
+            height: 2px;
+            background: repeating-linear-gradient(90deg, #b0b0b0, #b0b0b0 4px, #777 4px, #777 8px);
+            border-radius: 1px;
+            width: 100%;
+        }
+
+        .stylophone-logo {
+            position: absolute;
+            top: 25px; /* Adjust based on grille position */
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Orbitron', sans-serif; /* Futuristic font */
+            font-size: 2rem;
+            color: #ccc;
+            text-shadow: 0 0 5px rgba(0,255,255,0.5);
+            letter-spacing: 2px;
+            z-index: 10;
+        }
+        .stylophone-logo::after {
+            content: '®';
+            font-size: 0.5em;
+            vertical-align: super;
+            margin-left: -5px;
+        }
+
+        .stylus-slot-area {
+            background-color: #000;
+            padding: 5px 0;
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-bottom: 5px;
+        }
+
+        .stylus-label {
+            color: #aaa;
+            font-size: 0.75rem;
+            font-family: "Roboto Mono", monospace;
+            padding-left: 10px;
+            letter-spacing: 1px;
+        }
+
+        .stylus-slot {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #111;
+            border-radius: 4px;
+            margin: 0 10px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .middle-controls {
+            display: flex;
+            padding: 10px 20px 0;
+            background-color: #222;
+        }
+
+        .left-controls {
+            background-color: #eee; /* White background for controls */
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+            margin-right: 15px; /* Space from keyboard */
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .switch-group {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.65rem;
+            color: #555;
+            text-align: left;
+        }
+
+        .toggle-switch-container {
+            position: relative;
+            width: 30px;
+            height: 15px;
+            background-color: #999;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .toggle-switch {
+            position: absolute;
+            width: 13px;
+            height: 13px;
+            background-color: #fff;
+            border-radius: 50%;
+            top: 1px;
+            left: 1px;
+            transition: transform 0.2s;
+            border: 1px solid #777;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .toggle-switch.on {
+            transform: translateX(15px);
+            background-color: #4CAF50; /* Green for ON */
+        }
+        .toggle-switch-container.vibrato .toggle-switch.on {
+            background-color: #ff9800; /* Orange for VIBRATO */
+        }
+
+        .selector-switch {
+            width: 30px;
+            height: 20px;
+            background-color: #999;
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .selector-handle {
+            position: absolute;
+            width: 100%;
+            height: 50%; /* For 2 positions */
+            background-color: #fff;
+            left: 0;
+            top: 0;
+            transition: top 0.2s;
+            border-bottom: 1px solid #777;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6em;
+            color: #333;
+            font-weight: bold;
+        }
+        .selector-handle.pos2 { /* For middle position in 3-way */
+             top: 50%;
+        }
+        .selector-handle.pos3 { /* For bottom position in 3-way */
+             top: 100%; /* Will be set to 66% height if 3 way */
+             transform: translateY(-100%);
+        }
+
+        .selector-switch.tone .selector-handle {
+            height: 33.3%;
+        }
+        .selector-switch.tone .selector-handle.pos1 { top: 0; }
+        .selector-switch.tone .selector-handle.pos2 { top: 33.3%; }
+        .selector-switch.tone .selector-handle.pos3 { top: 66.6%; }
+
+        .keyboard-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #eee; /* White background behind keys */
+            border-radius: 6px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+            position: relative; /* For absolute positioning of labels */
+            padding: 5px; /* Inner padding */
+        }
+
+        .top-labels-row {
+            display: flex;
+            height: 25px; /* Height for the top label row */
+            margin-bottom: 2px;
+            position: relative; /* Needed for z-index of labels */
+        }
+
+        .top-label-segment {
+            flex-grow: 1;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #333;
+            font-weight: bold;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1; /* Ensure labels are above background */
+        }
+        .top-label-segment.white {
+            background-color: #fff;
+        }
+        .top-label-segment.black {
+            background-color: #000;
+            color: #eee;
+        }
+
+        .top-label-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: #888;
+            z-index: 0; /* Behind labels */
+        }
+
+        .metal-keyboard {
+            display: flex;
+            flex-grow: 1;
+            padding: 3px;
+            gap: 2px; /* Gap between keys */
+            position: relative; /* For the outline */
+            background-color: #eee; /* Background for the gaps when keys are smaller */
+        }
+        .metal-keyboard::before {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            pointer-events: none; /* Do not block interaction with keys */
+        }
+
+        .key {
+            flex-grow: 1;
+            background: linear-gradient(to bottom, #d8d8d8 0%, #a0a0a0 50%, #808080 100%); /* More realistic metal */
+            border: 1px solid #777;
+            border-radius: 2px;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.7), inset 0 -1px 2px rgba(0,0,0,0.5);
+            width: calc((100% / var(--num-keys)) - 2px); /* Dynamic width with gap */
+            transition: background-color 0.05s ease; /* Visual feedback on hover/press */
+            position: relative;
+        }
+
+        /* Active key feedback */
+        .key.active {
+            background: linear-gradient(to bottom, #b0b0b0 0%, #707070 50%, #505050 100%);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .bottom-labels-row {
+            display: flex;
+            height: 18px; /* Height for the bottom label row */
+            margin-top: 2px;
+            position: relative;
+        }
+
+        .bottom-label-segment {
+            flex-grow: 1;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #333;
+            font-weight: bold;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+        }
+
+        .bottom-label-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: #888;
+            z-index: 0;
+        }
+
+        .bottom-base {
+            background-color: #e0e0e0; /* White bottom base */
+            height: 20px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: 0 0 12px 12px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+            z-index: -1; /* Behind other elements */
+        }
+
+        /* Simple stylus cursor */
+        .metal-keyboard:hover {
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stylophone-container">
+        <div class="top-section">
+            <div class="speaker-area">
+                <div class="speaker-grille-bg">
+                    <!-- Generate 3 horizontal lines for the grille --><div class="grille-line"></div>
+                    <div class="grille-line"></div>
+                    <div class="grille-line"></div>
+                </div>
+            </div>
+            <div class="stylophone-logo">Stylophone</div>
+            <div class="stylus-slot-area">
+                <span class="stylus-label">STYLUS</span>
+                <div class="stylus-slot"></div>
+            </div>
+        </div>
+
+        <div class="middle-controls">
+            <div class="left-controls">
+                <!-- Power Switch --><div class="switch-group">
+                    <label>POWER</label>
+                    <div id="power-switch-container" class="toggle-switch-container">
+                        <div class="toggle-switch" data-state="off"></div>
+                    </div>
+                    <div class="flex justify-between w-full text-xs mt-1 px-1"><span>OFF</span><span>ON</span></div>
+                </div>
+
+                <!-- Vibrato Switch --><div class="switch-group mt-3">
+                    <label>VIBRATO</label>
+                    <div id="vibrato-switch-container" class="toggle-switch-container vibrato">
+                        <div class="toggle-switch" data-state="off"></div>
+                    </div>
+                    <div class="flex justify-between w-full text-xs mt-1 px-1"><span>OFF</span><span>ON</span></div>
+                </div>
+
+                <!-- Tone Selector --><div class="switch-group mt-3">
+                    <label>TONE</label>
+                    <div id="tone-selector" class="selector-switch tone">
+                        <div class="selector-handle pos1" data-tone="1"></div>
+                    </div>
+                    <div class="flex justify-between w-full text-xs mt-1 px-1">
+                        <span>1</span><span>2</span><span>3</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="keyboard-area">
+                <!-- Top Labels Row --><div id="top-labels-row" class="top-labels-row">
+                    <!-- Labels generated by JS --></div>
+
+                <!-- Metal Keyboard Area --><div id="keyboard" class="metal-keyboard">
+                    <!-- Keys generated by JS --></div>
+
+                <!-- Bottom Labels Row --><div id="bottom-labels-row" class="bottom-labels-row">
+                    <!-- Labels generated by JS --></div>
+            </div>
+        </div>
+        <div class="bottom-base"></div>
+    </div>
+
+    <script>
+        // --- Web Audio Setup ---
+        let audioContext;
+        let oscillator;
+        let gainNode;
+        let vibratoLFO;
+        let vibratoGain;
+        let isPlaying = false;
+        let isPoweredOn = false; // Track power state
+        let isVibratoOn = false; // Track vibrato state
+        let currentTone = 1; // Track tone state (1, 2, or 3)
+
+        // Frequencies for a Stylophone (C4 to G5, including sharps for 20 keys)
+        // A common Stylophone has 13 keys from C4 to C5, then a few more.
+        // We'll use 20 notes as requested, covering C4 to G5.
+        const noteFrequencies = [
+            261.63, 277.18, 293.66, 311.13, 329.63, // C4 to E4
+            349.23, 369.99, 392.00, 415.30, 440.00, // F4 to A4
+            466.16, 493.88, 523.25, 554.37, 587.33, // A#4 to D5
+            622.25, 659.25, 698.46, 739.99, 783.99  // D#5 to G5
+        ];
+
+        const numKeys = noteFrequencies.length;
+
+        const keyboard = document.getElementById('keyboard');
+        const topLabelsRow = document.getElementById('top-labels-row');
+        const bottomLabelsRow = document.getElementById('bottom-labels-row');
+
+        const powerSwitchContainer = document.getElementById('power-switch-container');
+        const powerSwitch = powerSwitchContainer.querySelector('.toggle-switch');
+
+        const vibratoSwitchContainer = document.getElementById('vibrato-switch-container');
+        const vibratoSwitch = vibratoSwitchContainer.querySelector('.toggle-switch');
+
+        const toneSelector = document.getElementById('tone-selector');
+        const toneSelectorHandle = toneSelector.querySelector('.selector-handle');
+
+        // --- Generate Keys and Labels ---
+        function generateKeyboardElements() {
+            keyboard.innerHTML = ''; // Clear existing keys
+            topLabelsRow.innerHTML = ''; // Clear existing labels
+            bottomLabelsRow.innerHTML = ''; // Clear existing labels
+
+            // Set CSS variable for key width calculation
+            keyboard.style.setProperty('--num-keys', numKeys);
+
+            const topLabels = ['1.5', '3.5', '4.5', '6.5', '8.5', '10.5', '11.5', '13.5', '15.5', '17.5', '19.5']; // Approximate positions
+            const topLabelIndices = [1, 3, 4, 6, 8, 10, 11, 13, 15, 17, 19]; // Indices for the sharp/half-step notes
+
+            for (let i = 0; i < numKeys; i++) {
+                // Key element
+                const key = document.createElement('div');
+                key.className = 'key h-full';
+                key.dataset.noteIndex = i;
+                keyboard.appendChild(key);
+
+                // Bottom Label (1, 2, 3...)
+                const bottomLabelSegment = document.createElement('div');
+                bottomLabelSegment.className = 'bottom-label-segment';
+                bottomLabelSegment.style.width = `${100 / numKeys}%`;
+                bottomLabelSegment.textContent = i + 1;
+                bottomLabelsRow.appendChild(bottomLabelSegment);
+
+                // Top Label (1.5, 3.5...)
+                const topLabelSegment = document.createElement('div');
+                topLabelSegment.className = 'top-label-segment';
+                topLabelSegment.style.width = `${100 / numKeys}%`;
+                
+                let isBlackSegment = false;
+                if (topLabelIndices.includes(i)) {
+                    topLabelSegment.textContent = topLabels[topLabelIndices.indexOf(i)];
+                    topLabelSegment.classList.add('black');
+                    isBlackSegment = true;
+                } else {
+                    topLabelSegment.classList.add('white');
+                }
+
+                // Add vertical lines between segments
+                if (i < numKeys - 1) {
+                    const lineTop = document.createElement('div');
+                    lineTop.className = 'top-label-line';
+                    lineTop.style.left = `${(100 / numKeys) * (i + 1)}%`;
+                    topLabelsRow.appendChild(lineTop);
+
+                    const lineBottom = document.createElement('div');
+                    lineBottom.className = 'bottom-label-line';
+                    lineBottom.style.left = `${(100 / numKeys) * (i + 1)}%`;
+                    bottomLabelsRow.appendChild(lineBottom);
+                }
+                topLabelsRow.appendChild(topLabelSegment);
+            }
+        }
+        generateKeyboardElements(); // Generate on load
+
+        // --- Initialize Audio ---
+        function initAudio() {
+            if (audioContext) return; // Already initialized
+
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                oscillator = audioContext.createOscillator();
+                gainNode = audioContext.createGain();
+                vibratoLFO = audioContext.createOscillator();
+                vibratoGain = audioContext.createGain();
+
+                oscillator.type = 'sawtooth'; // A classic retro synth sound
+                oscillator.connect(gainNode);
+
+                // Vibrato setup
+                vibratoLFO.type = 'sine';
+                vibratoLFO.frequency.value = 6; // Vibrato speed (Hz)
+                vibratoGain.gain.value = 0; // Start with no vibrato depth
+                vibratoLFO.connect(vibratoGain);
+                vibratoGain.connect(oscillator.detune); // Connect LFO to oscillator detune for pitch modulation
+                vibratoLFO.start(0);
+
+                gainNode.connect(audioContext.destination);
+
+                gainNode.gain.value = 0; // Start silent
+                oscillator.start(0);
+                console.log("Audio initialized.");
+            } catch (e) {
+                console.error("Web Audio API is not supported in this browser", e);
+                alert("Sorry, your browser doesn't support the Web Audio API needed for this simulation.");
+            }
+        }
+
+        // --- Sound Control ---
+        function playNote(noteIndex) {
+            if (!audioContext || !isPoweredOn || noteIndex < 0 || noteIndex >= noteFrequencies.length) {
+                stopSound(); // Ensure sound stops if power is off or invalid note
+                return;
+            }
+
+            const frequency = noteFrequencies[noteIndex];
+            
+            // Apply tone adjustment (simple shift for now)
+            let adjustedFrequency = frequency;
+            if (currentTone === 2) { // Example: Shift down a bit
+                adjustedFrequency *= 0.95; 
+            } else if (currentTone === 3) { // Example: Shift up a bit
+                adjustedFrequency *= 1.05;
+            }
+
+            // Set frequency with a slight glide (portamento)
+            oscillator.frequency.setTargetAtTime(adjustedFrequency, audioContext.currentTime, 0.01);
+
+            if (!isPlaying) {
+                // Ramp up volume quickly
+                gainNode.gain.setTargetAtTime(0.3, audioContext.currentTime, 0.005);
+                isPlaying = true;
+            }
+        }
+
+        function stopSound() {
+            if (!audioContext || !isPlaying) return;
+            // Ramp down volume quickly
+            gainNode.gain.setTargetAtTime(0, audioContext.currentTime, 0.01);
+            isPlaying = false;
+        }
+
+        function updateVibrato() {
+            if (vibratoGain) {
+                // Depth of vibrato (in cents)
+                vibratoGain.gain.setTargetAtTime(isVibratoOn && isPoweredOn ? 50 : 0, audioContext.currentTime, 0.05);
+            }
+        }
+
+        // --- Event Listeners ---
+        let isMouseDown = false;
+        let activeKey = null;
+
+        function getNoteIndexFromEvent(e) {
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            // Check if interaction is directly on a key
+            let targetElement = document.elementFromPoint(clientX, clientY);
+            let keyElement = targetElement ? targetElement.closest('.key') : null;
+
+            if (keyElement && keyElement.dataset.noteIndex) {
+                return parseInt(keyElement.dataset.noteIndex, 10);
+            }
+            
+            // Fallback for dragging across the keyboard area
+            const rect = keyboard.getBoundingClientRect();
+            if (clientX >= rect.left && clientX <= rect.right &&
+                clientY >= rect.top && clientY <= rect.bottom) {
+                
+                const x = clientX - rect.left;
+                const percent = x / rect.width;
+                const noteIndex = Math.floor(percent * numKeys);
+
+                if (noteIndex >= 0 && noteIndex < numKeys) {
+                    return noteIndex;
+                }
+            }
+            return -1; // Not over a valid key area
+        }
+
+        function handleInteractionStart(e) {
+            e.preventDefault(); 
+            if (!isPoweredOn) return; // Only interact if powered on
+
+            initAudio(); // Initialize audio on first user interaction
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            isMouseDown = true;
+            const noteIndex = getNoteIndexFromEvent(e);
+            if (noteIndex !== -1) {
+                playNote(noteIndex);
+                if (activeKey) activeKey.classList.remove('active');
+                activeKey = keyboard.children[noteIndex];
+                activeKey.classList.add('active');
+            } else {
+                stopSound(); // If clicked off a key, stop sound
+                if (activeKey) activeKey.classList.remove('active');
+                activeKey = null;
+            }
+        }
+
+        function handleInteractionMove(e) {
+            e.preventDefault();
+            if (!isMouseDown || !isPoweredOn) return;
+
+            const noteIndex = getNoteIndexFromEvent(e);
+            if (noteIndex !== -1) {
+                playNote(noteIndex);
+                if (activeKey && activeKey !== keyboard.children[noteIndex]) {
+                    activeKey.classList.remove('active');
+                }
+                activeKey = keyboard.children[noteIndex];
+                activeKey.classList.add('active');
+            } else {
+                // If we drag off the keys, stop the sound
+                stopSound();
+                if (activeKey) activeKey.classList.remove('active');
+                activeKey = null;
+            }
+        }
+
+        function handleInteractionEnd(e) {
+            e.preventDefault();
+            isMouseDown = false;
+            stopSound();
+            if (activeKey) activeKey.classList.remove('active');
+            activeKey = null;
+        }
+
+        // --- Control Switches ---
+        powerSwitchContainer.addEventListener('click', () => {
+            isPoweredOn = !isPoweredOn;
+            powerSwitch.dataset.state = isPoweredOn ? 'on' : 'off';
+            powerSwitch.classList.toggle('on', isPoweredOn);
+            if (!isPoweredOn) {
+                stopSound();
+                // Also turn off vibrato visually if power is off
+                isVibratoOn = false;
+                vibratoSwitch.dataset.state = 'off';
+                vibratoSwitch.classList.remove('on');
+            }
+            updateVibrato(); // Update vibrato state based on power
+            console.log("Power:", isPoweredOn ? "ON" : "OFF");
+        });
+
+        vibratoSwitchContainer.addEventListener('click', () => {
+            if (!isPoweredOn) return; // Can't turn on vibrato if power is off
+            isVibratoOn = !isVibratoOn;
+            vibratoSwitch.dataset.state = isVibratoOn ? 'on' : 'off';
+            vibratoSwitch.classList.toggle('on', isVibratoOn);
+            updateVibrato();
+            console.log("Vibrato:", isVibratoOn ? "ON" : "OFF");
+        });
+
+        toneSelector.addEventListener('click', () => {
+            currentTone = (currentTone % 3) + 1; // Cycle 1 -> 2 -> 3 -> 1
+            toneSelectorHandle.dataset.tone = currentTone;
+            // Update handle position
+            if (currentTone === 1) toneSelectorHandle.classList.remove('pos2', 'pos3');
+            else if (currentTone === 2) { toneSelectorHandle.classList.remove('pos3'); toneSelectorHandle.classList.add('pos2'); }
+            else if (currentTone === 3) { toneSelectorHandle.classList.remove('pos2'); toneSelectorHandle.classList.add('pos3'); }
+            
+            console.log("Tone:", currentTone);
+            // If a note is currently playing, update its frequency
+            if (isPlaying && activeKey) {
+                playNote(parseInt(activeKey.dataset.noteIndex, 10));
+            }
+        });
+
+
+        // Mouse Events
+        keyboard.addEventListener('mousedown', handleInteractionStart);
+        keyboard.addEventListener('mousemove', handleInteractionMove);
+        
+        window.addEventListener('mouseup', handleInteractionEnd);
+        keyboard.addEventListener('mouseleave', (e) => {
+            if (isMouseDown) { // Only stop if the mouse button is still down
+                stopSound();
+                if (activeKey) activeKey.classList.remove('active');
+                activeKey = null;
+            }
+        });
+
+        // Touch Events
+        keyboard.addEventListener('touchstart', handleInteractionStart);
+        keyboard.addEventListener('touchmove', handleInteractionMove);
+        keyboard.addEventListener('touchend', handleInteractionEnd);
+        keyboard.addEventListener('touchcancel', handleInteractionEnd);
+
+    </script>
+</body>
+</html>
+
