@@ -261,22 +261,8 @@
             background-color: #ef9a9a; /* Light red */
             border-color: #b17474;
         }
-        #note-display {
-            width: 40px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #fff;
-            border: 1px solid #999;
-            border-radius: 3px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #333;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
-            flex-shrink: 0;
-        }
-        
+        /* The #note-display styles have been removed */
+
         /* --- SONG SHEET STYLES --- */
         #song-sheet-display {
             background-color: #fff;
@@ -484,7 +470,7 @@
                     </select>
                     <button id="play-song-btn">Play</button>
                     <button id="stop-song-btn">Stop</button>
-                    <div id="note-display">--</div>
+                    <!-- The note-display div has been removed -->
                 </div>
                 
                 <!-- --- NEW SONG SHEET DISPLAY --- -->
@@ -821,7 +807,7 @@
         const songSelector = document.getElementById('song-selector');
         const playBtn = document.getElementById('play-song-btn');
         const stopBtn = document.getElementById('stop-song-btn');
-        const noteDisplay = document.getElementById('note-display');
+        // const noteDisplay = document.getElementById('note-display'); // Removed
         const songSheetDisplay = document.getElementById('song-sheet-display'); // NEW
 
         // --- Populate Song Selector ---
@@ -1070,13 +1056,13 @@
                 if (noteString === "-") {
                     // This is a pause
                     stopSound();
-                    noteDisplay.textContent = "-";
+                    // noteDisplay.textContent = "-"; // Removed
                     noteCounter++;
                     currentSongTimeout = setTimeout(playNextNote, song.tempo); // Schedule next note
                 
                 } else if (noteString.includes('-')) {
                     // This is a "slide" (fast sequence)
-                    noteDisplay.textContent = noteString;
+                    // noteDisplay.textContent = noteString; // Removed
                     const slideNotes = noteString.split('-');
                     
                     // NEW LOGIC: Each note in the slide gets the *full* tempo,
@@ -1119,7 +1105,7 @@
                         playNote(noteIndex);
                         activeKey = keyboard.querySelector(`.key[data-note-index="${noteIndex}"]`);
                         if (activeKey) activeKey.classList.add('active');
-                        noteDisplay.textContent = noteString;
+                        // noteDisplay.textContent = noteString; // Removed
                         
                         // Schedule this note to stop
                         const stopDelay = Math.max(50, song.tempo - 50);
@@ -1127,7 +1113,7 @@
                     } else {
                         // Invalid note
                         stopSound();
-                        noteDisplay.textContent = "?";
+                        // noteDisplay.textContent = "?"; // Removed
                         console.warn(`Invalid note: "${noteString}" in song "${song.name}"`);
                     }
                     
@@ -1145,7 +1131,7 @@
                 currentSongTimeout = null;
             }
             stopSoundAndUnhighlight(); // Use new helper
-            noteDisplay.textContent = "--";
+            // noteDisplay.textContent = "--"; // Removed
             playBtn.disabled = false;
             songSelector.disabled = false;
             
@@ -1303,5 +1289,6 @@
     </script>
 </body>
 </html>
+
 
 
