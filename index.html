@@ -1078,7 +1078,10 @@
                     // This is a "slide" (fast sequence)
                     noteDisplay.textContent = noteString;
                     const slideNotes = noteString.split('-');
-                    const slideTempo = Math.max(50, song.tempo / slideNotes.length);
+                    
+                    // NEW LOGIC: Each note in the slide gets the *full* tempo,
+                    // but we play them back-to-back without the 50ms gap.
+                    const slideTempo = song.tempo; // Each note gets the full tempo
                     let slideCounter = 0;
                     
                     function playSlideNote() {
@@ -1087,7 +1090,9 @@
                         if (!isSongPlaying || slideCounter >= slideNotes.length) {
                             // Slide is over
                             noteCounter++; // Move to next main note
-                            currentSongTimeout = setTimeout(playNextNote, song.tempo); // Schedule next main note
+                            // Schedule the *next* main note/slide immediately.
+                            // The next note's logic will handle its own gap/pause.
+                            currentSongTimeout = setTimeout(playNextNote, 0); 
                             return; 
                         }
                         
@@ -1101,7 +1106,9 @@
                         }
                         
                         slideCounter++;
-                        currentSongTimeout = setTimeout(playSlideNote, slideTempo); // Schedule next slide note
+                        // Schedule the *next slide note* after the full tempo.
+                        // The stop happens at the start of the next call.
+                        currentSongTimeout = setTimeout(playSlideNote, slideTempo); 
                     }
                     playSlideNote(); // Start the slide
 
@@ -1296,4 +1303,5 @@
     </script>
 </body>
 </html>
+
 
